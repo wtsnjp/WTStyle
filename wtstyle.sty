@@ -14,6 +14,7 @@
 
 %%%% newifs
 \newif\if@wtst@chapter@exist@
+\newif\if@wtst@first@format@\@wtst@first@format@true
 \newif\if@wtst@simple@\@wtst@simple@false
 
 %%%% utilities
@@ -30,8 +31,16 @@
   \let\wtst@thepcounter\thesection
 \fi
 
+%%%% check option
+\def\wtst@check@first@format{%
+  \if@wtst@first@format@
+    \@wtst@first@format@false
+  \else
+    \wtst@error{You can not use multiple formats}%
+  \fi}
+
 %%%% options
-\DeclareOption{simple}{\@wtst@simple@true}
+\DeclareOption{simple}{\wtst@check@first@format\@wtst@simple@true}
 \ProcessOptions\relax
 
 %%%% styles
