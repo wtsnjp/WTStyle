@@ -1,0 +1,33 @@
+%
+% wtbase.sty
+%
+
+%%%% package declaration
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{wtbase}
+\def\wtbs@pkgname{wtbase}
+
+%%%% error messages
+\def\wtbs@warn{\PackageWarningNoLine\wtbs@pkgname}
+\def\wtbs@error{\PackageError\wtbs@pkgname}
+
+%%%% option
+\def\wtbs@if@option@exist{\@ifnextchar[}
+
+%%%% counter
+\def\wtbs@count@list#1#2{% #1:counter #2:list
+  #1\z@\@for\wtbs@member:=#2\do{\advance#1\@ne}}
+
+%%%% define macros
+\def\wtbs@exchange#1#2{\let\wtbs@temp#1\let#1#2\let#2\wtbs@temp}
+
+%%%% new dimens
+\newdimen\wtbs@temp@dim
+
+%%%% dimen utilities
+\def\wtbs@get@capital@height{\bgroup
+  \sbox\z@ T%
+  \global\wtbs@temp@dim\ht\z@
+  \egroup}
+
+%% EOF

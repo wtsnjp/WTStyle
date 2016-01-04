@@ -1,0 +1,128 @@
+%
+% wtstyle.sty
+%
+
+%%%% package declaration
+\NeedsTeXFormat{pLaTeX2e}
+\RequirePackage{wtbase}
+\ProvidesPackage{wtstyle}
+\def\wtst@pkgname{wtstyle}
+
+%%%% error messages
+\def\wtst@warn{\PackageWarningNoLine\wtst@pkgname}
+\def\wtst@error{\PackageError\wtst@pkgname}
+
+%%%% newifs
+\newif\if@wtst@chapter@exist@
+\newif\if@wtst@simple@\@wtst@simple@false
+
+%%%% utilities
+\def\wtst@environment@with@option#1[#2]{\begin{wtst@#1}[#2]}
+\def\wtst@environment@without@option#1{\begin{wtst@#1}}
+
+%%%% check chapter
+\@ifundefined{thechapter}{\@wtst@chapter@exist@false}{\@wtst@chapter@exist@true}
+\if@wtst@chapter@exist@
+  \def\wtst@addtoreset#1{\@addtoreset{#1}{chapter}}
+  \let\wtst@thepcounter\thechapter
+\else
+  \def\wtst@addtoreset#1{\@addtoreset{#1}{section}}
+  \let\wtst@thepcounter\thesection
+\fi
+
+%%%% options
+\DeclareOption{simple}{\@wtst@simple@true}
+\ProcessOptions\relax
+
+%%%% styles
+
+%% common
+
+% footnote
+\renewcommand\thefootnote{\arabic{footnote})}
+\wtst@addtoreset{footnote}
+
+% equation
+\renewcommand{\theequation}{\wtst@thepcounter.\arabic{equation}}
+\wtst@addtoreset{equation}
+
+% figure
+\renewcommand{\thefigure}{\wtst@thepcounter.\arabic{figure}}
+\wtst@addtoreset{figure}
+
+% table
+\renewcommand{\thetable}{\wtst@thepcounter.\arabic{table}}
+\wtst@addtoreset{table}
+
+%% simple
+\if@wtst@simple@
+
+% packages
+\RequirePackage{tcolorbox}
+
+% heading
+\def\@makeschapterhead#1{%
+  \hbox{}\normalsize
+  \vskip\baselineskip
+  \hrule\@height.6\p@\@depth.6\p@\vskip2\p@\hrule\@height.3\p@\@depth.3\p@
+  \vskip.5\baselineskip
+  \begingroup\centering
+    \reset@font\LARGE\bfseries#1%
+  \par\endgroup
+  \ifdim\prevdepth>-\@m\p@\vskip-\prevdepth\fi
+  \vskip.5\baselineskip
+  \hrule\@height.3\p@\@depth.3\p@\vskip2\p@\hrule\@height.6\p@\@depth.6\p@
+  \vskip\baselineskip}
+\def\@makechapterhead#1{%
+  \hbox{}\normalsize
+  \vskip\baselineskip
+  \hrule\@height.6\p@\@depth.6\p@\vskip2\p@\hrule\@height.3\p@\@depth.3\p@
+  \vskip.5\baselineskip
+  \begingroup\centering\bfseries
+    \@chapapp
+    {\mdseries\sffamily\Large\thechapter}%
+    \@chappos\\
+    \LARGE#1%
+  \par\endgroup
+  \ifdim\prevdepth>-\@m\p@\vskip-\prevdepth\fi
+  \vskip.5\baselineskip
+  \hrule\@height.3\p@\@depth.3\p@\vskip2\p@\hrule\@height.6\p@\@depth.6\p@
+  \vskip\baselineskip}
+
+% theorem
+\if@wtst@chapter@exist@
+  \newtheorem{wtst@definition}{定義}[chapter]%
+  \newtheorem{wtst@theorem}{定理}[chapter]%
+  \newtheorem{wtst@lemma}[wtst@theorem]{補題}%
+  \newtheorem{wtst@example}{例}[chapter]%
+\else
+  \newtheorem{wtst@definition}{定義}[section]%
+  \newtheorem{wtst@theorem}{定理}[section]%
+  \newtheorem{wtst@lemma}[wtst@theorem]{補題}%
+  \newtheorem{wtst@example}{例}[section]%
+\fi
+\tcbuselibrary{breakable}
+\newtcolorbox{wtst@mathbox}
+  {sharp corners,colback=white,left=2mm,right=2mm,enlarge top initially by=2mm}
+\newenvironment{definition}
+  {\begin{wtst@mathbox}\@ifnextchar[%]
+    {\wtst@environment@with@option{definition}}{\wtst@environment@without@option{definition}}}
+  {\end{wtst@definition}\end{wtst@mathbox}}
+\newenvironment{theorem}
+  {\begin{wtst@mathbox}\@ifnextchar[%]
+    {\wtst@environment@with@option{theorem}}{\wtst@environment@without@option{theorem}}}
+  {\end{wtst@theorem}\end{wtst@mathbox}}
+\newenvironment{lemma}
+  {\begin{wtst@mathbox}\@ifnextchar[%]
+    {\wtst@environment@with@option{lemma}}{\wtst@environment@without@option{lemma}}}
+  {\end{wtst@lemma}\end{wtst@mathbox}}
+\newenvironment{example}{\begin{wtst@example}}{\end{wtst@example}}
+\newenvironment{proof}
+  {\par\normalfont\topsep6\p@\@plus6\p@\labelsep=1zw
+    \trivlist\item[\hskip\labelsep{\bfseries 証明}]\ignorespaces}
+  {\endtrivlist}
+
+\fi
+%% end simple
+
+%% EOF

@@ -1,0 +1,51 @@
+%
+% wtref.sty
+%
+
+%%%% package declaration
+\NeedsTeXFormat{LaTeX2e}
+\RequirePackage{wtbase}
+\ProvidesPackage{wtref}
+\def\wtrf@pkgname{wtref}
+
+%%%% error messages
+\def\wtrf@warn{\PackageWarningNoLine\wtrf@pkgname}
+\def\wtrf@error{\PackageError\wtrf@pkgname}
+\def\wtrf@nocounterr#1{\wtrf@error{No counter '#1' defined}}
+
+%%%% new counts
+\newcount\wtrf@tempcnta
+\newcount\wtrf@tempcntb
+
+%%%% name space
+\def\wtrf@namespace{}
+\def\WTRefSetNamespaceCounter#1{%
+  \@ifundefined{c@#1}%
+    {\wtrf@nocounterr{#1}}%
+    {\def\wtrf@namespace{\arabic{#1}:}}}
+\@onlypreamble\WTRefSetNamespaceCounter
+
+%%%% equation
+\def\WTRefEquationPrefix{eq:}
+\def\WTRefPrePreEquation{}
+\def\WTRefPostPostEquation{}
+\def\WTRefPreEquation{(}
+\def\WTRefPostEquation{)}
+\def\WTRefSepEquation{,\space}
+\def\eqlabel#1{\label{\WTRefEquationPrefix\wtrf@namespace #1}}
+\def\eqref{\wtbs@if@option@exist{\wtrf@man@eqref}{\wtrf@eqref}}
+\def\wtrf@eqref#1{\begingroup\WTRefPrePreEquation
+  \wtbs@count@list{\wtrf@tempcnta}{#1}\wtrf@tempcntb\z@
+  \@for\wtrf@member:=#1\do{\advance\wtrf@tempcntb\@ne
+    \WTRefPreEquation\ref{\WTRefEquationPrefix\wtrf@namespace\wtrf@member}\WTRefPostEquation
+  \ifnum\wtrf@tempcntb<\wtrf@tempcnta\WTRefSepEquation\fi}%
+  \WTRefPostPostEquation\endgroup}
+\def\wtrf@man@eqref[#1]#2{%
+  \ifx\wtrf@namespace\@empty
+    \wtrf@warn{Name space counter isn't set}%
+    \wtrf@eqref{#2}%
+  \else
+    \begingroup\def\wtrf@namespace{#1:}\wtrf@eqref{#2}\endgroup
+  \fi}
+
+%% EOF

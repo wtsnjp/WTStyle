@@ -1,0 +1,33 @@
+%
+% wtmath.sty
+%
+
+%%%% package declaration
+\NeedsTeXFormat{LaTeX2e}
+\RequirePackage{wtbase}
+\ProvidesPackage{wtmath}
+\def\wtmt@pkgname{wtmath}
+
+%%%% error messages
+\def\wtmt@warn{\PackageWarningNoLine\wtmt@pkgname}
+\def\wtmt@error{\PackageError\wtmt@pkgname}
+
+%%%% utilities
+\def\WTMathOutputRight#1{\relax\ifmmode\tag*{#1}\else\hfill#1\fi}
+\def\WTMathRelativeMiddle#1{\mathrel{}\middle#1\mathrel{}}
+\def\WTMathBold#1{\text{\boldmath $#1$}}
+\let\WTMathExchange\wtbs@exchange
+
+%%%% proof
+\def\WTMathHalmos{\begingroup
+  \wtbs@get@capital@height
+  \rule[-.15\wtbs@temp@dim]{.6\wtbs@temp@dim}{1.2\wtbs@temp@dim}%
+  \endgroup}
+
+%%%% sets
+\def\WTMathBar#1{\begingroup
+  \wtbs@get@capital@height
+  \overline{#1\rule{0pt}{\wtbs@temp@dim}}
+  \endgroup}
+
+%% EOF
