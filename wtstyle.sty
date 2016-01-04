@@ -103,15 +103,17 @@
 
 % theorem
 \if@wtst@chapter@exist@
-  \newtheorem{wtst@definition}{定義}[chapter]%
-  \newtheorem{wtst@theorem}{定理}[chapter]%
-  \newtheorem{wtst@lemma}[wtst@theorem]{補題}%
-  \newtheorem{wtst@example}{例}[chapter]%
+  \newtheorem{wtst@definition}{定義}[chapter]
+  \newtheorem{wtst@theorem}{定理}[chapter]
+  \newtheorem{wtst@lemma}[wtst@theorem]{補題}
+  % \newcounter{wtst@example}[chapter]
+  \newtheorem{wtst@example}{例}[chapter]
 \else
-  \newtheorem{wtst@definition}{定義}[section]%
-  \newtheorem{wtst@theorem}{定理}[section]%
-  \newtheorem{wtst@lemma}[wtst@theorem]{補題}%
-  \newtheorem{wtst@example}{例}[section]%
+  \newtheorem{wtst@definition}{定義}[section]
+  \newtheorem{wtst@theorem}{定理}[section]
+  \newtheorem{wtst@lemma}[wtst@theorem]{補題}
+  % \newcounter{wtst@example}[section]
+  \newtheorem{wtst@example}{例}[section]
 \fi
 
 \newenvironment{definition}
@@ -133,9 +135,13 @@
       {\wtst@environment@without@option{lemma}}}
   {\end{wtst@lemma}\end{wtst@mathbox}}
 \newenvironment{example}{\begin{wtst@example}}{\end{wtst@example}}
+% \newenvironment{example}
+%   {\par\normalfont\topsep\z@\@plus6\p@\labelsep=1zw\refstepcounter{wtst@example}
+%     \trivlist\item[\hskip\labelsep{\headfont 例\thechapter.\thewtst@example}]\ignorespaces}
+%   {\endtrivlist\addvspace{6pt}}
 \newenvironment{proof}
-  {\par\normalfont\topsep6\p@\@plus6\p@\labelsep=1zw
-    \trivlist\item[\hskip\labelsep{\bfseries 証明}]\ignorespaces}
+  {\par\normalfont\topsep\z@\@plus6\p@\labelsep=1zw
+    \trivlist\item[\hskip\labelsep{\headfont 証明}]\ignorespaces}
   {\endtrivlist}
 
 \fi
