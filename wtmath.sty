@@ -15,20 +15,33 @@
 %%%% new dimen
 \newdimen\wtmt@tempdima
 
-%%%% utilities
-\def\WTMathOutputRight#1{\relax\ifmmode\tag*{#1}\else\hfill#1\fi}
-\def\WTMathRelativeMiddle#1{\mathrel{}\middle#1\mathrel{}}
-\def\WTMathBold#1{\text{\boldmath $#1$}}
-\let\WTMathExchange\wtbs@exchange
+%%%% options
+\DeclareOption{prefix}{\def\wtbs@prefix{wt}}
+\DeclareOption{noprefix}{\let\wtbs@prefix\@empty}
+\ExecuteOptions{noprefix}
+\ProcessOptions\relax
+
+%%%% print
+\def\wtmt@print@right#1{\relax\ifmmode\tag*{#1}\else\hfill#1\fi}
+
+%%%% for setting
+\wtbs@usercommand{relmiddle}{\wtmt@relmiddle}
+\def\wtmt@relmiddle#1{\mathrel{}\middle#1\mathrel{}}
+\wtbs@usercommand{mathbold}{\wtmt@mathbold}
+\def\wtmt@mathbold#1{\text{\boldmath $#1$}}
+\wtbs@usercommand{exchange}{\wtbs@exchange}
 
 %%%% proof
-\def\WTMathHalmos{\begingroup
+\wtbs@usercommand{qed}{\wtmt@print@right\wtmt@halmos}
+\wtbs@usercommand{halmos}{\wtmt@halmos}
+\def\wtmt@halmos{\begingroup
   \wtbs@get@capital@height\wtmt@tempdima
   \rule[-.15\wtmt@tempdima]{.6\wtmt@tempdima}{1.2\wtmt@tempdima}%
   \endgroup}
 
 %%%% sets
-\def\WTMathBar#1{\begingroup
+\wtbs@usercommand{bar}{\wtmt@bar}
+\def\wtmt@bar#1{\begingroup
   \wtbs@get@capital@height\wtmt@tempdima
   \overline{#1\rule{0pt}{\wtmt@tempdima}}
   \endgroup}

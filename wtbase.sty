@@ -21,7 +21,7 @@
 \def\wtbs@break{\\}
 
 %%%% macro definition
-\def\wtbs@usercommand#1#2{\expandafter\let\csname\wtbs@prefix #1\endcsname#2}
+\def\wtbs@usercommand#1#2{\expandafter\def\csname\wtbs@prefix #1\endcsname{#2}}
 \def\wtbs@if@option@exist{\@ifnextchar[}
 \def\wtbs@exchange#1#2{\let\wtbs@temp#1\let#1#2\let#2\wtbs@temp}
 
