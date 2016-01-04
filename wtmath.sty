@@ -12,6 +12,9 @@
 \def\wtmt@warn{\PackageWarningNoLine\wtmt@pkgname}
 \def\wtmt@error{\PackageError\wtmt@pkgname}
 
+%%%% new dimen
+\newdimen\wtmt@tempdima
+
 %%%% utilities
 \def\WTMathOutputRight#1{\relax\ifmmode\tag*{#1}\else\hfill#1\fi}
 \def\WTMathRelativeMiddle#1{\mathrel{}\middle#1\mathrel{}}
@@ -20,14 +23,14 @@
 
 %%%% proof
 \def\WTMathHalmos{\begingroup
-  \wtbs@get@capital@height
-  \rule[-.15\wtbs@temp@dim]{.6\wtbs@temp@dim}{1.2\wtbs@temp@dim}%
+  \wtbs@get@capital@height\wtmt@tempdima
+  \rule[-.15\wtmt@tempdima]{.6\wtmt@tempdima}{1.2\wtmt@tempdima}%
   \endgroup}
 
 %%%% sets
 \def\WTMathBar#1{\begingroup
-  \wtbs@get@capital@height
-  \overline{#1\rule{0pt}{\wtbs@temp@dim}}
+  \wtbs@get@capital@height\wtmt@tempdima
+  \overline{#1\rule{0pt}{\wtmt@tempdima}}
   \endgroup}
 
 %% EOF

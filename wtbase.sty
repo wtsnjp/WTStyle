@@ -11,23 +11,28 @@
 \def\wtbs@warn{\PackageWarningNoLine\wtbs@pkgname}
 \def\wtbs@error{\PackageError\wtbs@pkgname}
 
-%%%% option
-\def\wtbs@if@option@exist{\@ifnextchar[}
+%%%% symbols
+\def\wtbs@bparen{(}
+\def\wtbs@eparen{)}
+\def\wtbs@bbracket{[}
+\def\wtbs@ebracket{]}
+\def\wtbs@comma{,}
+\def\wtbs@period{.}
+\def\wtbs@break{\\}
 
-%%%% counter
+%%%% macro definition
+\def\wtbs@if@option@exist{\@ifnextchar[}
+\def\wtbs@exchange#1#2{\let\wtbs@temp#1\let#1#2\let#2\wtbs@temp}
+
+%%%% count
 \def\wtbs@count@list#1#2{% #1:counter #2:list
   #1\z@\@for\wtbs@member:=#2\do{\advance#1\@ne}}
 
-%%%% define macros
-\def\wtbs@exchange#1#2{\let\wtbs@temp#1\let#1#2\let#2\wtbs@temp}
-
-%%%% new dimens
-\newdimen\wtbs@temp@dim
-
 %%%% dimen utilities
-\def\wtbs@get@capital@height{\bgroup
-  \sbox\z@ T%
-  \global\wtbs@temp@dim\ht\z@
-  \egroup}
+\def\wtbs@get@capital@height#1{% #1:dimen
+  \begingroup
+  \sbox\z@ A%
+  \global#1\ht\z@
+  \endgroup}
 
 %% EOF

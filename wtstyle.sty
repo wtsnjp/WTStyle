@@ -57,8 +57,11 @@
 %% simple
 \if@wtst@simple@
 
-% packages
+% packages and settings
 \RequirePackage{tcolorbox}
+\tcbuselibrary{breakable}
+\newtcolorbox{wtst@mathbox}
+  {sharp corners,colback=white,left=2mm,right=2mm,enlarge top initially by=2mm}
 
 % heading
 \def\@makeschapterhead#1{%
@@ -101,20 +104,24 @@
   \newtheorem{wtst@lemma}[wtst@theorem]{補題}%
   \newtheorem{wtst@example}{例}[section]%
 \fi
-\tcbuselibrary{breakable}
-\newtcolorbox{wtst@mathbox}
-  {sharp corners,colback=white,left=2mm,right=2mm,enlarge top initially by=2mm}
+
 \newenvironment{definition}
-  {\begin{wtst@mathbox}\@ifnextchar[%]
-    {\wtst@environment@with@option{definition}}{\wtst@environment@without@option{definition}}}
+  {\begin{wtst@mathbox}
+    \wtbs@if@option@exist
+      {\wtst@environment@with@option{definition}}
+      {\wtst@environment@without@option{definition}}}
   {\end{wtst@definition}\end{wtst@mathbox}}
 \newenvironment{theorem}
-  {\begin{wtst@mathbox}\@ifnextchar[%]
-    {\wtst@environment@with@option{theorem}}{\wtst@environment@without@option{theorem}}}
+  {\begin{wtst@mathbox}
+    \wtbs@if@option@exist
+      {\wtst@environment@with@option{theorem}}
+      {\wtst@environment@without@option{theorem}}}
   {\end{wtst@theorem}\end{wtst@mathbox}}
 \newenvironment{lemma}
-  {\begin{wtst@mathbox}\@ifnextchar[%]
-    {\wtst@environment@with@option{lemma}}{\wtst@environment@without@option{lemma}}}
+  {\begin{wtst@mathbox}
+    \wtbs@if@option@exist
+      {\wtst@environment@with@option{lemma}}
+      {\wtst@environment@without@option{lemma}}}
   {\end{wtst@lemma}\end{wtst@mathbox}}
 \newenvironment{example}{\begin{wtst@example}}{\end{wtst@example}}
 \newenvironment{proof}
