@@ -17,6 +17,12 @@
 \newcount\wtrf@tempcnta
 \newcount\wtrf@tempcntb
 
+%%%% options
+\DeclareOption{prefix}{\def\wtbs@prefix{wt}}
+\DeclareOption{noprefix}{\let\wtbs@prefix\@empty}
+\ExecuteOptions{noprefix}
+\ProcessOptions\relax
+
 %%%% name space
 \def\wtrf@namespace{}
 \def\WTRefSetNamespaceCounter#1{%

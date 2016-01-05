@@ -12,6 +12,11 @@
 \def\wtkw@warn{\PackageWarningNoLine\wtkw@pkgname}
 \def\wtkw@error{\PackageError\wtkw@pkgname}
 
+%%%% options
+\DeclareOption{prefix}{\def\wtbs@prefix{wt}}
+\DeclareOption{noprefix}{\let\wtbs@prefix\@empty}
+\ExecuteOptions{noprefix}
+\ProcessOptions\relax
 
 
 %% EOF
