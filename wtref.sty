@@ -4,57 +4,131 @@
 
 %%%% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{wtref}
+\ProvidesPackage{wtref}[2016/01/09 v0.0]  % many function haven't test yet
 \def\wtrf@pkgname{wtref}
 
 %%%% error messages
 \def\wtrf@warn{\PackageWarningNoLine\wtrf@pkgname}
 \def\wtrf@error{\PackageError\wtrf@pkgname}
-\def\wtrf@nocounterr#1{\wtrf@error{No counter '#1' defined}}
+
+%%%% new if
+\newif\if@wtrf@use@scope@\@wtrf@use@scope@true
+\newif\if@wtrf@common@last@\@wtrf@common@last@false
 
 %%%% new counts
 \newcount\wtrf@tempcnta
 \newcount\wtrf@tempcntb
 
+%%%% utility
+\def\wtrf@if@option@exist{\@ifnextchar[}
+\def\wtrf@count@list#1#2{% #1:counter #2:list
+  #1\z@\@for\wtrf@member:=#2\do{\advance#1\@ne}}
+
+%%%% symbols
+\def\wtrf@bparen{(}
+\def\wtrf@eparen{)}
+\def\wtrf@comma{,}
+
 %%%% options
-\DeclareOption{prefix}{\def\wtbs@prefix{wt}}
-\DeclareOption{noprefix}{\let\wtbs@prefix\@empty}
-\ExecuteOptions{noprefix}
+\def\wtrf@check@counter#1{%
+  \@ifundefined{c@#1}%
+    {\wtrf@error{No counter '#1' defined}}%
+    {}}
+\DeclareOption{chapter}{%
+  \wtrf@check@counter{chapter}%
+  \let\wtrf@thechapter\thechapter
+  \def\wtrf@scope{\wtrf@thechapter:}}
+\DeclareOption{section}{%
+  \wtrf@check@counter{section}%
+  \let\wtrf@thesection\thesection
+  \def\wtrf@scope{\wtrf@thesection:}}
+\DeclareOption{subsection}{%
+  \wtrf@check@counter{subsection}%
+  \let\wtrf@thesubsection\thesubsection
+  \def\wtrf@scope{\wtrf@thesubsection:}}
+\DeclareOption{global}{\let\wtrf@scope\@empty\@wtrf@use@scope@false}
+\ExecuteOptions{global}
 \ProcessOptions\relax
 
-%%%% utility
-\def\wtbs@count@list#1#2{% #1:counter #2:list
-  #1\z@\@for\wtbs@member:=#2\do{\advance#1\@ne}}
+%%%% new ref
+\def\newref#1{%
+  \@ifundefined{wtrf@#1@prefix@one}%
+    {\wtrf@newref{#1}}%
+    {\wtrf@error{refname '#1' already exists}}}
+\@onlypreamble\newref
+\def\wtrf@newref#1{%
+  \expandafter\def\csname #1label\endcsname##1{\label{#1:\wtrf@scope ##1}}%
+  \expandafter\def\csname #1ref\endcsname{%
+    \@ifstar
+      {\@wtrf@common@last@true\csname wtrf@#1ref@check@option\endcsname}%
+      {\csname wtrf@#1ref@check@option\endcsname}}%
+  \expandafter\def\csname wtrf@#1ref@check@option\endcsname{%
+    \wtrf@if@option@exist
+      {\csname wtrf@#1ref@with@option\endcsname}%
+      {\csname wtrf@#1ref@without@option\endcsname}}%
+  \expandafter\def\csname wtrf@#1ref@with@option\endcsname[##1]##2{\begingroup
+    \if@wtrf@use@scope@\def\wtrf@temp@scope{##1:}\else\let\wtrf@temp@scope\@empty\fi
+    \if@wtrf@common@last@\expandafter
+      \def\csname wtrf@#1@last@sep\endcsname{\csname wtrf@#1@sep\endcsname}\fi
+    \csname wtrf@#1ref\endcsname{##2}\endgroup\@wtrf@common@last@false}%
+  \expandafter\def\csname wtrf@#1ref@without@option\endcsname##1{\begingroup
+    \let\wtrf@temp@scope\@empty
+    \if@wtrf@common@last@\expandafter
+      \def\csname wtrf@#1@last@sep\endcsname{\csname wtrf@#1@sep\endcsname}\fi
+    \csname wtrf@#1ref\endcsname{##1}\endgroup\@wtrf@common@last@false}%
+  \expandafter\def\csname wtrf@#1ref\endcsname##1{%
+    \wtrf@tempcnta\z@\@for\wtrf@member:=##1\do{\advance\wtrf@tempcnta\@ne}%
+    \ifnum\wtrf@tempcnta<\tw@
+      \csname wtrf@#1@prefix@one\endcsname
+      \csname wtrf@#1@prefix@two\endcsname
+      \ref{#1:\wtrf@temp@scope ##1}%
+      \csname wtrf@#1@suffix@two\endcsname
+      \csname wtrf@#1@suffix@one\endcsname
+    \else
+      \wtrf@tempcntb\@ne\advance\wtrf@tempcnta\m@ne
+      \csname wtrf@#1@prefix@one\endcsname
+      \@for\wtrf@member:=##1\do{%
+        \csname wtrf@#1@prefix@two\endcsname
+        \ref{#1:\wtrf@temp@scope\wtrf@member}%
+        \csname wtrf@#1@suffix@two\endcsname
+        \ifnum\wtrf@tempcnta>\wtrf@tempcntb
+          \csname wtrf@#1@sep\endcsname
+        \fi
+        \ifnum\wtrf@tempcnta=\wtrf@tempcntb
+          \csname wtrf@#1@last@sep\endcsname
+        \fi
+        \advance\wtrf@tempcntb\@ne}%
+      \csname wtrf@#1@suffix@one\endcsname
+    \fi}%
+  \wtrf@set@ref@style{#1}{\wtrf@comma\space}{}{}{}{}}
 
-%%%% name space
-\def\wtrf@namespace{}
-\def\WTRefSetNamespaceCounter#1{%
-  \@ifundefined{c@#1}%
-    {\wtrf@nocounterr{#1}}%
-    {\def\wtrf@namespace{\arabic{#1}:}}}
-\@onlypreamble\WTRefSetNamespaceCounter
+%%%% set ref style
+\def\setrefstyle#1{%
+  \@ifundefined{wtrf@#1@prefix@one}%
+    {\wtrf@error{refname '#1' does not exist}}%
+    {\wtrf@set@ref@style{#1}}}
+\def\wtrf@set@ref@style#1{\wtrf@set@sep{#1}}
+\def\wtrf@set@sep#1#2{%
+  \expandafter\def\csname wtrf@#1@sep\endcsname{#2}%
+  \wtrf@if@option@exist
+    {\wtrf@set@last@sep{#1}}%
+    {\expandafter\def\csname wtrf@#1@last@sep\endcsname{#2}\wtrf@set@prefix{#1}}}
+\def\wtrf@set@last@sep#1[#2]{%
+  \expandafter\def\csname wtrf@#1@last@sep\endcsname{#2}\wtrf@set@prefix{#1}}
+\def\wtrf@set@prefix#1#2#3{%
+  \expandafter\def\csname wtrf@#1@prefix@one\endcsname{#2}%
+  \expandafter\def\csname wtrf@#1@prefix@two\endcsname{#3}%
+  \wtrf@set@suffix{#1}}
+\def\wtrf@set@suffix#1#2#3{%
+  \expandafter\def\csname wtrf@#1@suffix@two\endcsname{#2}%
+  \expandafter\def\csname wtrf@#1@suffix@one\endcsname{#3}}
 
-%%%% equation
-\def\WTRefEquationPrefix{eq:}
-\def\WTRefPrePreEquation{}
-\def\WTRefPostPostEquation{}
-\def\WTRefPreEquation{(}
-\def\WTRefPostEquation{)}
-\def\WTRefSepEquation{,\space}
-\def\eqlabel#1{\label{\WTRefEquationPrefix\wtrf@namespace #1}}
-\def\eqref{\wtbs@if@option@exist{\wtrf@man@eqref}{\wtrf@eqref}}
-\def\wtrf@eqref#1{\begingroup\WTRefPrePreEquation
-  \wtbs@count@list{\wtrf@tempcnta}{#1}\wtrf@tempcntb\z@
-  \@for\wtrf@member:=#1\do{\advance\wtrf@tempcntb\@ne
-    \WTRefPreEquation\ref{\WTRefEquationPrefix\wtrf@namespace\wtrf@member}\WTRefPostEquation
-  \ifnum\wtrf@tempcntb<\wtrf@tempcnta\WTRefSepEquation\fi}%
-  \WTRefPostPostEquation\endgroup}
-\def\wtrf@man@eqref[#1]#2{%
-  \ifx\wtrf@namespace\@empty
-    \wtrf@warn{Name space counter isn't set}%
-    \wtrf@eqref{#2}%
-  \else
-    \begingroup\def\wtrf@namespace{#1:}\wtrf@eqref{#2}\endgroup
-  \fi}
+%%%% prepare default refs
+\wtrf@newref{eq}
+\wtrf@newref{fig}
+\wtrf@newref{tab}
+\wtrf@set@ref@style{eq}{\wtrf@comma\space}{}{\wtrf@bparen}{\wtrf@eparen}{}
+\wtrf@set@ref@style{fig}{\wtrf@comma\space}{}{}{}{}
+\wtrf@set@ref@style{tab}{\wtrf@comma\space}{}{}{}{}
 
 %% EOF
