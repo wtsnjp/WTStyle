@@ -4,7 +4,6 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\RequirePackage{wtbase}
 \ProvidesPackage{wtstyle}
 \def\wtst@pkgname{wtstyle}
 
@@ -18,6 +17,7 @@
 \newif\if@wtst@simple@\@wtst@simple@false
 
 %%%% utilities
+\def\wtst@if@option@exist{\@ifnextchar[}
 \def\wtst@environment@with@option#1[#2]{\begin{wtst@#1}[#2]}
 \def\wtst@environment@without@option#1{\begin{wtst@#1}}
 
@@ -118,19 +118,19 @@
 
 \newenvironment{definition}
   {\begin{wtst@mathbox}
-    \wtbs@if@option@exist
+    \wtst@if@option@exist
       {\wtst@environment@with@option{definition}}
       {\wtst@environment@without@option{definition}}}
   {\end{wtst@definition}\end{wtst@mathbox}}
 \newenvironment{theorem}
   {\begin{wtst@mathbox}
-    \wtbs@if@option@exist
+    \wtst@if@option@exist
       {\wtst@environment@with@option{theorem}}
       {\wtst@environment@without@option{theorem}}}
   {\end{wtst@theorem}\end{wtst@mathbox}}
 \newenvironment{lemma}
   {\begin{wtst@mathbox}
-    \wtbs@if@option@exist
+    \wtst@if@option@exist
       {\wtst@environment@with@option{lemma}}
       {\wtst@environment@without@option{lemma}}}
   {\end{wtst@lemma}\end{wtst@mathbox}}
