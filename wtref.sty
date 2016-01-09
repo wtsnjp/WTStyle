@@ -4,7 +4,6 @@
 
 %%%% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\RequirePackage{wtbase}
 \ProvidesPackage{wtref}
 \def\wtrf@pkgname{wtref}
 
@@ -22,6 +21,10 @@
 \DeclareOption{noprefix}{\let\wtbs@prefix\@empty}
 \ExecuteOptions{noprefix}
 \ProcessOptions\relax
+
+%%%% utility
+\def\wtbs@count@list#1#2{% #1:counter #2:list
+  #1\z@\@for\wtbs@member:=#2\do{\advance#1\@ne}}
 
 %%%% name space
 \def\wtrf@namespace{}
