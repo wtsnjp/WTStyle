@@ -4,7 +4,6 @@
 
 %%%% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\RequirePackage{wtbase}
 \ProvidesPackage{wtmath}
 \def\wtmt@pkgname{wtmath}
 
@@ -16,33 +15,42 @@
 \newdimen\wtmt@tempdima
 
 %%%% options
-\DeclareOption{prefix}{\def\wtbs@prefix{wt}}
-\DeclareOption{noprefix}{\let\wtbs@prefix\@empty}
+\DeclareOption{prefix}{\def\wtmt@prefix{wt}}
+\DeclareOption{noprefix}{\let\wtmt@prefix\@empty}
 \ExecuteOptions{noprefix}
 \ProcessOptions\relax
+
+%%%% utility
+\def\wtmt@usercommand#1#2{\expandafter\def\csname\wtmt@prefix #1\endcsname{#2}}
+\def\wtmt@get@capital@height#1{% #1:dimen
+  \begingroup
+  \sbox\z@ A%
+  \global#1\ht\z@
+  \endgroup}
 
 %%%% print
 \def\wtmt@print@right#1{\relax\ifmmode\tag*{#1}\else\hfill#1\fi}
 
 %%%% for setting
-\wtbs@usercommand{relmiddle}{\wtmt@relmiddle}
+\wtmt@usercommand{relmiddle}{\wtmt@relmiddle}
 \def\wtmt@relmiddle#1{\mathrel{}\middle#1\mathrel{}}
-\wtbs@usercommand{mathbold}{\wtmt@mathbold}
+\wtmt@usercommand{mathbold}{\wtmt@mathbold}
 \def\wtmt@mathbold#1{\text{\boldmath $#1$}}
-\wtbs@usercommand{exchange}{\wtbs@exchange}
+\wtmt@usercommand{exchange}{\wtmt@exchange}
+\def\wtmt@exchange#1#2{\let\wtmt@temp#1\let#1#2\let#2\wtmt@temp}
 
 %%%% proof
-\wtbs@usercommand{qed}{\wtmt@print@right\wtmt@halmos}
-\wtbs@usercommand{halmos}{\wtmt@halmos}
+\wtmt@usercommand{qed}{\wtmt@print@right\wtmt@halmos}
+\wtmt@usercommand{halmos}{\wtmt@halmos}
 \def\wtmt@halmos{\begingroup
-  \wtbs@get@capital@height\wtmt@tempdima
+  \wtmt@get@capital@height\wtmt@tempdima
   \rule[-.15\wtmt@tempdima]{.6\wtmt@tempdima}{1.2\wtmt@tempdima}%
   \endgroup}
 
 %%%% sets
-\wtbs@usercommand{bar}{\wtmt@bar}
+\wtmt@usercommand{bar}{\wtmt@bar}
 \def\wtmt@bar#1{\begingroup
-  \wtbs@get@capital@height\wtmt@tempdima
+  \wtmt@get@capital@height\wtmt@tempdima
   \overline{#1\rule{0pt}{\wtmt@tempdima}}
   \endgroup}
 
