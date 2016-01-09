@@ -11,17 +11,26 @@
 \def\wtmt@warn{\PackageWarningNoLine\wtmt@pkgname}
 \def\wtmt@error{\PackageError\wtmt@pkgname}
 
+%%%% new if
+\newif\if@wtmt@renew@
+
 %%%% new dimen
 \newdimen\wtmt@tempdima
 
 %%%% options
-\DeclareOption{prefix}{\def\wtmt@prefix{wt}}
-\DeclareOption{noprefix}{\let\wtmt@prefix\@empty}
-\ExecuteOptions{noprefix}
+\DeclareOption{renew}{\@wtmt@renew@true}
+\DeclareOption{norenew}{\@wtmt@renew@false}
+\ExecuteOptions{renew}
 \ProcessOptions\relax
 
+%%%% user command
+\if@wtmt@renew@
+  \def\wtmt@usercommand#1#2{\expandafter\def\csname #1\endcsname{#2}}
+\else
+  \def\wtmt@usercommand#1#2{\@ifundefined{#1}{\expandafter\def\csname #1\endcsname{#2}}{}}
+\fi
+
 %%%% utility
-\def\wtmt@usercommand#1#2{\expandafter\def\csname\wtmt@prefix #1\endcsname{#2}}
 \def\wtmt@get@capital@height#1{% #1:dimen
   \begingroup
   \sbox\z@ A%
