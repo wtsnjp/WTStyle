@@ -30,23 +30,28 @@
 \def\wtrf@comma{,}
 
 %%%% options
+\let\wtrf@scope\@empty
 \def\wtrf@check@counter#1{%
   \@ifundefined{c@#1}%
     {\wtrf@error{No counter '#1' defined}}%
     {}}
 \DeclareOption{chapter}{%
   \wtrf@check@counter{chapter}%
-  \let\wtrf@thechapter\thechapter
+  \def\wtrf@thechapter{\arabic{chapter}}%
   \def\wtrf@scope{\wtrf@thechapter:}}
 \DeclareOption{section}{%
   \wtrf@check@counter{section}%
-  \let\wtrf@thesection\thesection
+  \@ifundefined{c@chapter}%
+    {\def\wtrf@thesection{\arabic{section}}}%
+    {\def\wtrf@thesection{\arabic{chapter}.\arabic{section}}}%
   \def\wtrf@scope{\wtrf@thesection:}}
 \DeclareOption{subsection}{%
   \wtrf@check@counter{subsection}%
-  \let\wtrf@thesubsection\thesubsection
+  \@ifundefined{c@chapter}%
+    {\def\wtrf@thesubsection{\arabic{section}.\arabic{subsection}}}%
+    {\def\wtrf@thesubsection{\arabic{chapter}.\arabic{section}.\arabic{subsection}}}%
   \def\wtrf@scope{\wtrf@thesubsection:}}
-\DeclareOption{global}{\let\wtrf@scope\@empty\@wtrf@use@scope@false}
+\DeclareOption{global}{\@wtrf@use@scope@false}
 \ExecuteOptions{global}
 \ProcessOptions\relax
 
