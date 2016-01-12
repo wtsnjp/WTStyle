@@ -49,7 +49,7 @@
 
 %%%% styles
 
-%% common
+%% ===== common =====
 
 % footnote
 \renewcommand\thefootnote{\arabic{footnote}\wtst@eparen}
@@ -67,14 +67,18 @@
 \renewcommand{\thetable}{\wtst@thepcounter.\arabic{table}}
 \wtst@addtoreset{table}
 
-%% simple
+%% ===== simple =====
 \if@wtst@simple@
 
 % packages and settings
 \RequirePackage{tcolorbox}
 \tcbuselibrary{breakable}
 \newtcolorbox{wtst@mathbox}{%
-  sharp corners,colback=white,left=2mm,right=2mm,enlarge top initially by=2mm}
+  sharp corners,%
+  colback=white,%
+  beforeafter skip=10pt,%
+  left=2mm,%
+  right=2mm}
 
 % heading
 \def\@makeschapterhead#1{%
@@ -110,14 +114,12 @@
   \newtheorem{wtst@definition}{定義}[chapter]
   \newtheorem{wtst@theorem}{定理}[chapter]
   \newtheorem{wtst@lemma}[wtst@theorem]{補題}
-  % \newcounter{wtst@example}[chapter]
-  \newtheorem{wtst@example}{例}[chapter]
+  \newcounter{wtst@example}[chapter]
 \else
   \newtheorem{wtst@definition}{定義}[section]
   \newtheorem{wtst@theorem}{定理}[section]
   \newtheorem{wtst@lemma}[wtst@theorem]{補題}
-  % \newcounter{wtst@example}[section]
-  \newtheorem{wtst@example}{例}[section]
+  \newcounter{wtst@example}[section]
 \fi
 
 \newenvironment{definition}
@@ -138,17 +140,17 @@
       {\wtst@environment@with@option{lemma}}
       {\wtst@environment@without@option{lemma}}}
   {\end{wtst@lemma}\end{wtst@mathbox}}
-\newenvironment{example}{\begin{wtst@example}}{\end{wtst@example}}
-% \newenvironment{example}
-%   {\par\normalfont\topsep\z@\@plus6\p@\labelsep=1zw\refstepcounter{wtst@example}
-%     \trivlist\item[\hskip\labelsep{\headfont 例\thechapter.\thewtst@example}]\ignorespaces}
-%   {\endtrivlist\addvspace{6pt}}
+\newenvironment{example}
+  {\par\normalfont\topsep6\p@\@plus6\p@\labelsep=1zw
+    \refstepcounter{wtst@example}%
+    \trivlist\item[\hskip\labelsep{\headfont 例\thechapter.\thewtst@example}]\ignorespaces}
+  {\endtrivlist}
 \newenvironment{proof}
-  {\par\normalfont\topsep\z@\@plus6\p@\labelsep=1zw
+  {\par\normalfont\topsep6\p@\@plus6\p@\labelsep=1zw
     \trivlist\item[\hskip\labelsep{\headfont 証明}]\ignorespaces}
   {\endtrivlist}
 
 \fi
-%% end simple
+%% ===== end simple =====
 
 %% EOF
