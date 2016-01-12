@@ -21,6 +21,10 @@
 \def\wtst@environment@with@option#1[#2]{\begin{wtst@#1}[#2]}
 \def\wtst@environment@without@option#1{\begin{wtst@#1}}
 
+%%%% symbol
+\def\wtst@bparen{(}
+\def\wtst@eparen{)}
+
 %%%% check chapter
 \@ifundefined{thechapter}{\@wtst@chapter@exist@false}{\@wtst@chapter@exist@true}
 \if@wtst@chapter@exist@
@@ -48,7 +52,7 @@
 %% common
 
 % footnote
-\renewcommand\thefootnote{\arabic{footnote})}
+\renewcommand\thefootnote{\arabic{footnote}\wtst@eparen}
 \wtst@addtoreset{footnote}
 
 % equation
@@ -69,8 +73,8 @@
 % packages and settings
 \RequirePackage{tcolorbox}
 \tcbuselibrary{breakable}
-\newtcolorbox{wtst@mathbox}
-  {sharp corners,colback=white,left=2mm,right=2mm,enlarge top initially by=2mm}
+\newtcolorbox{wtst@mathbox}{%
+  sharp corners,colback=white,left=2mm,right=2mm,enlarge top initially by=2mm}
 
 % heading
 \def\@makeschapterhead#1{%
