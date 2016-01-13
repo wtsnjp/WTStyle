@@ -11,3 +11,53 @@
 \def\wtkw@warn{\PackageWarningNoLine\wtkw@pkgname}
 \def\wtkw@error{\PackageError\wtkw@pkgname}
 
+%%%% new ifs
+\newif\if@wtkw@ruby@\@wtkw@ruby@false
+\newif\if@wtkw@use@font@
+\newif\if@wtkw@first@
+
+%%%% key-value settings
+\RequirePackage{keyval}
+\define@key{wtkw}{read}{\def\wtkw@read{#1}}
+\define@key{wtkw}{ruby}[\@empty]{\@wtkw@ruby@true\def\wtkw@ruby{#1}}
+
+%%%% fonts
+\def\keywordfont{\bfseries}
+\def\firstkeywordfont{\keywordfont}
+
+%%%% utilities
+\def\wtkw@if@option@exist{\@ifnextchar[}
+\def\wtkw@empty{\@empty}
+
+%%%% keyword
+\def\keyword{\let\wtkw@read\@empty
+  \@ifstar
+    {\@wtkw@use@font@false\wtkw@keyword}%
+    {\@wtkw@use@font@true\wtkw@keyword}}
+\def\wtkw@keyword{%
+  \wtkw@if@option@exist
+    {\wtkw@setkeys}%
+    {\wtkw@@keyword}}
+\def\wtkw@setkeys[#1]{%
+  \setkeys{wtkw}{#1}\wtkw@@keyword}
+\def\wtkw@@keyword#1{%
+  \@ifundefined{wtkw@#1@read}
+    {\@wtkw@first@true
+      \expandafter\edef\csname wtkw@#1@read\endcsname{\wtkw@read}}%
+    {\@wtkw@first@false}%
+  \expandafter\ifx\csname wtkw@#1@read\endcsname\@empty
+    \index{#1}\else\index{\csname wtkw@#1@read\endcsname @#1}\fi
+  \bgroup
+    \if@wtkw@use@font@
+      \if@wtkw@first@\firstkeywordfont\else\keywordfont\fi
+    \fi
+    \if@wtkw@ruby@
+      \ifx\wtkw@ruby\wtkw@empty
+        \ruby{#1}{\csname wtkw@#1@read\endcsname}%
+      \else
+        \ruby{#1}{\wtkw@ruby}%
+      \fi
+    \else #1\fi
+  \egroup\@wtkw@ruby@false}
+
+%% EOF
