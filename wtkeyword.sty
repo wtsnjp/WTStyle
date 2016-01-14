@@ -19,6 +19,8 @@
 %%%% key-value settings
 \RequirePackage{keyval}
 \define@key{wtkw}{read}{\def\wtkw@read{#1}}
+% \define@key{wtkw}{index}{\def\wtkw@read{#1}}
+% \define@key{wtkw}{id}{\def\wtkw@read{#1}}
 \define@key{wtkw}{ruby}[\@empty]{\@wtkw@ruby@true\def\wtkw@ruby{#1}}
 
 %%%% fonts
@@ -39,6 +41,10 @@
     {\wtkw@setkeys}%
     {\wtkw@@keyword}}
 \def\wtkw@setkeys[#1]{%
+  \@ifnextchar"{\wtkw@@setkeys}{\wtkw@@@setkeys}#1\wtkw@nil}
+\def\wtkw@@setkeys"#1"#2\wtkw@nil{%
+  \setkeys{wtkw}{read=#1#2}\wtkw@@keyword}
+\def\wtkw@@@setkeys#1\wtkw@nil{%
   \setkeys{wtkw}{#1}\wtkw@@keyword}
 \def\wtkw@@keyword#1{%
   \@ifundefined{wtkw@#1@read}
