@@ -26,6 +26,7 @@
 %%%% fonts
 \def\keywordfont{\bfseries}
 \def\firstkeywordfont{\keywordfont}
+\def\starkeywordfont{}
 
 %%%% utilities
 \def\wtkw@if@option@exist{\@ifnextchar[}
@@ -66,6 +67,8 @@
   \bgroup
     \if@wtkw@use@font@
       \if@wtkw@first@\firstkeywordfont\else\keywordfont\fi
+    \else
+      \starkeywordfont
     \fi
     \if@wtkw@ruby@
       \ifx\wtkw@ruby\wtkw@empty
