@@ -1,0 +1,39 @@
+\documentclass[a4paper,uplatex]{jsarticle}
+
+\usepackage{otf}
+\usepackage{okumacro}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
+\newcommand{\Note}{\par\noindent ※}
+\newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
+
+\title{\texttt{wtstyle.sty} (v0.0)}
+\author{ワトソン}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\textsf{WTStyles}パッケージは著者が\LaTeX 文書作成にあたってよく利用するマクロを集めた
+ものである．\texttt{wtstyle.sty}はこの\textsf{WTStyles}パッケージを構成する要素の1つであり，
+著者が独自に作成した文書フォーマットを手軽に利用できるようにする．現在はp\TeX エンジンと
+\texttt{jsarticle}系クラスファイルの組み合わせのみをサポート対象としている．
+\end{abstract}
+
+\section{パッケージ読み込み}
+
+|\usepackage| 命令を用いて読み込む．この際，利用する文書フォーマットをオプションで指定する
+ことができる．何も指定しない場合は，後述する基本設定のみを行う．
+%
+\begin{syntax}
+|\usepackage[|\Meta{文書フォーマット}|]{wtstyle}|
+\end{syntax}
+
+
+
+
+
+
+\end{document}
