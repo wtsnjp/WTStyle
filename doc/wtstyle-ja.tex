@@ -18,22 +18,132 @@
 \begin{abstract}
 \textsf{WTStyles}パッケージは著者が\LaTeX 文書作成にあたってよく利用するマクロを集めた
 ものである．\texttt{wtstyle.sty}はこの\textsf{WTStyles}パッケージを構成する要素の1つであり，
-著者が独自に作成した文書フォーマットを手軽に利用できるようにする．現在はp\TeX エンジンと
+著者が独自に作成したスタイルを手軽に利用できるようにする．現在はp\TeX エンジンと
 \texttt{jsarticle}系クラスファイルの組み合わせのみをサポート対象としている．
 \end{abstract}
 
 \section{パッケージ読み込み}
 
-|\usepackage| 命令を用いて読み込む．この際，利用する文書フォーマットをオプションで指定する
+|\usepackage| 命令を用いて読み込む．この際，利用する文書のスタイルをオプションで指定する
 ことができる．何も指定しない場合は，後述する基本設定のみを行う．
 %
 \begin{syntax}
-|\usepackage[|\Meta{文書フォーマット}|]{wtstyle}|
+|\usepackage[|\Meta{スタイル}|]{wtstyle}|
 \end{syntax}
 
+\section{用語の定義}
 
+\texttt{wtstyle.sty}において，読み込み時に指定する\Meta{スタイル}に関わらず，必ず設定される
+項目を\textbf{基本設定}と呼ぶ．\texttt{wtstyle.sty}では利用している文書フォーマットにおいて
+最も大きな構造単位（ただし |\part| 命令で指定する``部''の単位を除く）に与えられた通し番号を
+しばしば利用する．この通し番号を保持する\LaTeX のカウンタを\textbf{親カウンタ}と呼ぶことに
+する．具体的には |\chapter| 命令が存在する環境では章番号を表すカウンタ，そうでない場合には
+節番号を表すカウンタがこれに該当する．
 
+\section{基本設定}
 
+以下の4つが\texttt{wtstyle.sty}の基本設定である．
+%
+\begin{itemize}
+\item 脚注の書式を``\Meta{脚注番号})''に変更する．脚注番号は$1,2,3,\dots$のように付けられ，
+|\chapter| 命令が存在する環境では章ごと，そうでない場合は節ごとにリセットされる．
+\item 式番号の書式を``(\Meta{親カウンタ}.\Meta{式番号})''に変更する．式番号は$1,2,3,\dots$の
+ように付けられ，親カウンタが更新される度にリセットされる．
+\item 図番号の書式を``\Meta{親カウンタ}.\Meta{図番号}''に変更する．
+図番号は$1,2,3,\dots$のように付けられ，親カウンタが更新される度にリセットされる．
+\item 表番号の書式を``\Meta{親カウンタ}.\Meta{表番号}''に変更する．
+表番号は$1,2,3,\dots$のように付けられ，親カウンタが更新される度にリセットされる．
+\end{itemize}
 
+\section{スタイル}
+
+既に述べたように\Meta{スタイル}はパッケージを読み込む際にオプションとして指定する．
+例えば\textsf{simple}スタイルを用いる場合には次のようにする．
+%
+\begin{syntax}
+|\usepackage[simple]{wtstyle}|
+\end{syntax}
+
+\subsection{simple}
+
+\subsubsection{依存パッケージ}
+
+\textsf{simple}スタイルは\textsf{tcolorbox}パッケージに依存する．当該パッケージの読み込みは
+自動的に行われるが，インストールはユーザ自身で行う必要がある．
+
+\subsubsection{上書きする書式}
+
+\textsf{simple}スタイルはクラスファイルの設定をあまり変更しないシンプルな書式である．
+|\chapter| 命令（およびその派生 |\chapter*| 命令など）が存在する場合，それらの命令により出力
+される見出しの見た目を変更する．それ以外は書式の変更は行わない．
+
+\subsubsection{使用可能な環境}
+
+\textsf{simple}スタイルは以下の5つの環境を提供する．
+
+\paragraph{\texttt{definition}環境}\mbox{}\par
+定義を記述するための環境．途中で改ページ可能な枠で囲われる．
+%
+\begin{syntax}
+|\begin{definition}[|\Meta{定義名}|]| \\
+|% ここに定義を書く| \\
+|\end{definition}|
+\end{syntax}
+
+定義内容を出力する部分の前に``\textbf{定義}\Meta{親カウンタ}.\Meta{定義番号}''という
+文字列が挿入される．\Meta{定義名}を指定した場合はさらに続けて``(\Meta{定義名})''が
+出力される．\Meta{定義番号}は$1,2,3,\dots$のように付けられ，親カウンタが更新される度に
+リセットされる．
+
+\paragraph{\texttt{theorem}環境}\mbox{}\par
+定理を記述するための環境．途中で改ページ可能な枠で囲われる．
+%
+\begin{syntax}
+|\begin{theorem}[|\Meta{定理名}|]| \\
+|% ここに定理を書く| \\
+|\end{theorem}|
+\end{syntax}
+
+定理内容を出力する部分の前に``\textbf{定理}\Meta{親カウンタ}.\Meta{定理番号}''という
+文字列が挿入される．\Meta{定理名}を指定した場合はさらに続けて``(\Meta{定理名})''が
+出力される．\Meta{定理番号}は$1,2,3,\dots$のように付けられ，親カウンタが更新される度に
+リセットされる．\Meta{定理番号}は後述する\texttt{lemma}環境でも利用される．
+
+\paragraph{\texttt{lemma}環境}\mbox{}\par
+補題を記述するための環境．途中で改ページ可能な枠で囲われる．
+%
+\begin{syntax}
+|\begin{lemma}[|\Meta{補題名}|]| \\
+|% ここに補題を書く| \\
+|\end{lemma}|
+\end{syntax}
+
+補題内容を出力する部分の前に``\textbf{補題}\Meta{親カウンタ}.\Meta{定理番号}''という
+文字列が挿入される．\Meta{補題名}を指定した場合はさらに続けて``(\Meta{補題名})''が
+出力される．
+
+\paragraph{\texttt{example}環境}\mbox{}\par
+例を記述するための環境．
+%
+\begin{syntax}
+|\begin{example}| \\
+|% ここに例を書く| \\
+|\end{example}|
+\end{syntax}
+
+例の内容を出力する部分の前に``\textbf{例}\Meta{親カウンタ}.\Meta{例番号}''という
+文字列が挿入される．\Meta{例番号}は$1,2,3,\dots$のように付けられ，親カウンタが更新される度に
+リセットされる．
+
+\paragraph{\texttt{proof}環境}\mbox{}\par
+証明を記述するための環境．
+%
+\begin{syntax}
+|\begin{example}| \\
+|% ここに例を書く| \\
+|\end{example}|
+\end{syntax}
+
+証明を出力する部分の前に``\textbf{証明}''という文字列が挿入される．
 
 \end{document}
