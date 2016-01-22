@@ -5,10 +5,11 @@ This is LaTeX package which collect macros that the author often use to create L
 * wtstyle.sty: define several document formats (pLaTeX only, at this point)
 * wtmath.sty: define macros for mathematics (amsmath package is required)
 * wtref.sty: extent LaTeX original \\label & \\ref command
+* wtkeyword.sty: help to make index
 
 ## Notice
 
-All files in this package are under developing. Any document for it has not completed yet. I can not recommend you to use this tools today.
+All files in this package are under developing. Akmost all documents for those has not completed yet.
 
 ## License
 
