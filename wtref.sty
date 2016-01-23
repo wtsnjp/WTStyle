@@ -12,7 +12,7 @@
 \def\wtrf@error{\PackageError\wtrf@pkgname}
 
 %%%% new if
-\newif\if@wtrf@use@scope@\@wtrf@use@scope@true
+\newif\if@wtrf@use@scope@
 \newif\if@wtrf@common@last@\@wtrf@common@last@false
 
 %%%% new counts
@@ -32,20 +32,24 @@
 %%%% options
 \let\wtrf@scope\@empty
 \def\wtrf@check@counter#1{%
+  \@wtrf@use@scope@true
   \@ifundefined{c@#1}%
     {\wtrf@error{No counter '#1' defined}}%
     {}}
 \DeclareOption{chapter}{%
+  \@wtrf@use@scope@true
   \wtrf@check@counter{chapter}%
   \def\wtrf@thechapter{\arabic{chapter}}%
   \def\wtrf@scope{\wtrf@thechapter:}}
 \DeclareOption{section}{%
+  \@wtrf@use@scope@true
   \wtrf@check@counter{section}%
   \@ifundefined{c@chapter}%
     {\def\wtrf@thesection{\arabic{section}}}%
     {\def\wtrf@thesection{\arabic{chapter}.\arabic{section}}}%
   \def\wtrf@scope{\wtrf@thesection:}}
 \DeclareOption{subsection}{%
+  \@wtrf@use@scope@true
   \wtrf@check@counter{subsection}%
   \@ifundefined{c@chapter}%
     {\def\wtrf@thesubsection{\arabic{section}.\arabic{subsection}}}%
@@ -77,7 +81,7 @@
       \def\csname wtrf@#1@last@sep\endcsname{\csname wtrf@#1@sep\endcsname}\fi
     \csname wtrf@#1ref\endcsname{##2}\endgroup\@wtrf@common@last@false}%
   \expandafter\def\csname wtrf@#1ref@without@option\endcsname##1{\begingroup
-    \let\wtrf@temp@scope\@empty
+    \if@wtrf@use@scope@\def\wtrf@temp@scope{\wtrf@scope}\else\let\wtrf@temp@scope\@empty\fi
     \if@wtrf@common@last@\expandafter
       \def\csname wtrf@#1@last@sep\endcsname{\csname wtrf@#1@sep\endcsname}\fi
     \csname wtrf@#1ref\endcsname{##1}\endgroup\@wtrf@common@last@false}%
