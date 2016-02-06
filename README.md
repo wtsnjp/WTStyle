@@ -9,7 +9,7 @@ This is LaTeX package which collect macros that the author often use to create L
 
 ## Notice
 
-All files in this package are under developing. Akmost all documents for those has not completed yet.
+All files in this package are under developing. Almost all documents for those has not completed yet.
 
 ## License
 
