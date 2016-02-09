@@ -4,8 +4,9 @@
 
 %%%% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{wtref}[2016/01/09 v0.0]  % many function haven't test yet
+\ProvidesPackage{wtref}[2016/02/09 v0.1]
 \def\wtrf@pkgname{wtref}
+\RequirePackage{xkeyval}
 
 %%%% error messages
 \def\wtrf@warn{\PackageWarningNoLine\wtrf@pkgname}
@@ -20,22 +21,20 @@
 \newcount\wtrf@tempcntb
 
 %%%% utility
+\def\wtrf@name@def#1{\expandafter\def\csname #1\endcsname}
+\def\wtrf@name@use#1{\csname #1\endcsname}
+\def\wtrf@name@let#1#2{\expandafter\let\csname #1\endcsname #2}
+\def\wtrf@name@clear#1{\expandafter\let\csname #1\endcsname\@undefined}
 \def\wtrf@if@option@exist{\@ifnextchar[}
-\def\wtrf@count@list#1#2{% #1:counter #2:list
+\def\wtrf@count@list#1#2{% #1:count-reg #2:list
   #1\z@\@for\wtrf@member:=#2\do{\advance#1\@ne}}
-
-%%%% symbols
-\def\wtrf@bparen{(}
-\def\wtrf@eparen{)}
-\def\wtrf@comma{,}
-
-%%%% options
-\let\wtrf@scope\@empty
 \def\wtrf@check@counter#1{%
-  \@wtrf@use@scope@true
   \@ifundefined{c@#1}%
     {\wtrf@error{No counter '#1' defined}}%
     {}}
+
+%%%% options
+\let\wtrf@scope\@empty
 \DeclareOption{chapter}{%
   \@wtrf@use@scope@true
   \wtrf@check@counter{chapter}%
@@ -61,83 +60,66 @@
 
 %%%% new ref
 \def\newref#1{%
-  \@ifundefined{wtrf@#1@prefix@one}%
+  \@ifundefined{wtrf@#1@namespace}%
     {\wtrf@newref{#1}}%
     {\wtrf@error{refname '#1' already exists}}}
 \@onlypreamble\newref
 \def\wtrf@newref#1{%
-  \expandafter\def\csname #1label\endcsname##1{\label{#1:\wtrf@scope ##1}}%
-  \expandafter\def\csname #1ref\endcsname{%
-    \@ifstar
-      {\@wtrf@common@last@true\csname wtrf@#1ref@check@option\endcsname}%
-      {\csname wtrf@#1ref@check@option\endcsname}}%
-  \expandafter\def\csname wtrf@#1ref@check@option\endcsname{%
+  % define namespace
+  \wtrf@name@def{wtrf@#1@namespace}{#1:\wtrf@scope}%
+  % define keys for setting styles
+  \define@key[wtrf]{#1@style}{refcmd}{\wtrf@name@def{wtrf@#1@refcmd}####1{##1}}%
+  \define@key[wtrf]{#1@style}{last sep}[\wtrf@name@use{wtrf@#1@sep}]{%
+    \wtrf@name@def{wtrf@#1@last@sep}{##1}}%
+  \define@cmdkeys[wtrf]{#1@style}[wtrf@#1@]{sep, prefix, suffix}%
+  % default key settings
+  \setkeys[wtrf]{#1@style}{%
+    refcmd=\ref{##1},
+    sep={,\space}, last sep,
+    prefix={}, suffix={}}%
+  % define label command
+  \wtrf@name@def{#1label}##1{\label{#1:\wtrf@scope ##1}}%
+  % define ref command
+  \wtrf@name@def{#1ref}{%
     \wtrf@if@option@exist
-      {\csname wtrf@#1ref@with@option\endcsname}%
-      {\csname wtrf@#1ref@without@option\endcsname}}%
-  \expandafter\def\csname wtrf@#1ref@with@option\endcsname[##1]##2{\begingroup
-    \if@wtrf@use@scope@\def\wtrf@temp@scope{##1:}\else\let\wtrf@temp@scope\@empty\fi
-    \if@wtrf@common@last@\expandafter
-      \def\csname wtrf@#1@last@sep\endcsname{\csname wtrf@#1@sep\endcsname}\fi
-    \csname wtrf@#1ref\endcsname{##2}\endgroup\@wtrf@common@last@false}%
-  \expandafter\def\csname wtrf@#1ref@without@option\endcsname##1{\begingroup
-    \if@wtrf@use@scope@\def\wtrf@temp@scope{\wtrf@scope}\else\let\wtrf@temp@scope\@empty\fi
-    \if@wtrf@common@last@\expandafter
-      \def\csname wtrf@#1@last@sep\endcsname{\csname wtrf@#1@sep\endcsname}\fi
-    \csname wtrf@#1ref\endcsname{##1}\endgroup\@wtrf@common@last@false}%
-  \expandafter\def\csname wtrf@#1ref\endcsname##1{%
+      {\wtrf@name@use{wtrf@#1ref@with@option}}%
+      {\wtrf@name@use{wtrf@#1@print}}}%
+  % when option exist
+  \wtrf@name@def{wtrf@#1ref@with@option}[##1]##2{%
+    \begingroup
+    \if@wtrf@use@scope@
+      \def\wtrf@scope{##1:}%
+    \else
+      \let\wtrf@scope\@empty
+    \fi
+    \wtrf@name@use{wtrf@#1@print}{##2}%
+    \endgroup}%
+  % print refs
+  \wtrf@name@def{wtrf@#1@print}##1{%
     \wtrf@tempcnta\z@\@for\wtrf@member:=##1\do{\advance\wtrf@tempcnta\@ne}%
     \ifnum\wtrf@tempcnta<\tw@
-      \csname wtrf@#1@prefix@one\endcsname
-      \csname wtrf@#1@prefix@two\endcsname
-      \ref{#1:\wtrf@temp@scope ##1}%
-      \csname wtrf@#1@suffix@two\endcsname
-      \csname wtrf@#1@suffix@one\endcsname
+      \wtrf@name@use{wtrf@#1@prefix}%
+      \wtrf@name@use{wtrf@#1@refcmd}{\wtrf@name@use{wtrf@#1@namespace}##1}%
+      \wtrf@name@use{wtrf@#1@suffix}%
     \else
       \wtrf@tempcntb\@ne\advance\wtrf@tempcnta\m@ne
-      \csname wtrf@#1@prefix@one\endcsname
+      \wtrf@name@use{wtrf@#1@prefix}
       \@for\wtrf@member:=##1\do{%
-        \csname wtrf@#1@prefix@two\endcsname
-        \ref{#1:\wtrf@temp@scope\wtrf@member}%
-        \csname wtrf@#1@suffix@two\endcsname
+        \wtrf@name@use{wtrf@#1@refcmd}{\wtrf@name@use{wtrf@#1@namespace}\wtrf@member}%
         \ifnum\wtrf@tempcnta>\wtrf@tempcntb
-          \csname wtrf@#1@sep\endcsname
+          \wtrf@name@use{wtrf@#1@sep}%
         \fi
         \ifnum\wtrf@tempcnta=\wtrf@tempcntb
-          \csname wtrf@#1@last@sep\endcsname
+          \wtrf@name@use{wtrf@#1@last@sep}%
         \fi
         \advance\wtrf@tempcntb\@ne}%
-      \csname wtrf@#1@suffix@one\endcsname
-    \fi}%
-  \wtrf@set@ref@style{#1}{\wtrf@comma\space}{}{}{}{}}
+      \wtrf@name@use{wtrf@#1@suffix}%
+    \fi}}
 
 %%%% set ref style
-\def\setrefstyle#1{%
-  \@ifundefined{wtrf@#1@prefix@one}%
+\def\setrefstyle#1#2{%
+  \@ifundefined{wtrf@#1@namespace}%
     {\wtrf@error{refname '#1' does not exist}}%
-    {\wtrf@set@ref@style{#1}}}
-\def\wtrf@set@ref@style#1{\wtrf@set@sep{#1}}
-\def\wtrf@set@sep#1#2{%
-  \expandafter\def\csname wtrf@#1@sep\endcsname{#2}%
-  \wtrf@if@option@exist
-    {\wtrf@set@last@sep{#1}}%
-    {\expandafter\def\csname wtrf@#1@last@sep\endcsname{#2}\wtrf@set@prefix{#1}}}
-\def\wtrf@set@last@sep#1[#2]{%
-  \expandafter\def\csname wtrf@#1@last@sep\endcsname{#2}\wtrf@set@prefix{#1}}
-\def\wtrf@set@prefix#1#2#3{%
-  \expandafter\def\csname wtrf@#1@prefix@one\endcsname{#2}%
-  \expandafter\def\csname wtrf@#1@prefix@two\endcsname{#3}%
-  \wtrf@set@suffix{#1}}
-\def\wtrf@set@suffix#1#2#3{%
-  \expandafter\def\csname wtrf@#1@suffix@two\endcsname{#2}%
-  \expandafter\def\csname wtrf@#1@suffix@one\endcsname{#3}}
-
-%%%% prepare default refs
-\wtrf@newref{eq}
-\wtrf@newref{fig}
-\wtrf@newref{tab}
-\wtrf@set@ref@style{eq}{\wtrf@comma\space}{}{\wtrf@bparen}{\wtrf@eparen}{}
-\wtrf@set@ref@style{fig}{\wtrf@comma\space}{}{}{}{}
-\wtrf@set@ref@style{tab}{\wtrf@comma\space}{}{}{}{}
+    {\setkeys[wtrf]{#1@style}{#2}}}
 
 %% EOF
