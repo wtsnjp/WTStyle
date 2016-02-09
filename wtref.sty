@@ -23,11 +23,7 @@
 %%%% utility
 \def\wtrf@name@def#1{\expandafter\def\csname #1\endcsname}
 \def\wtrf@name@use#1{\csname #1\endcsname}
-\def\wtrf@name@let#1#2{\expandafter\let\csname #1\endcsname #2}
-\def\wtrf@name@clear#1{\expandafter\let\csname #1\endcsname\@undefined}
 \def\wtrf@if@option@exist{\@ifnextchar[}
-\def\wtrf@count@list#1#2{% #1:count-reg #2:list
-  #1\z@\@for\wtrf@member:=#2\do{\advance#1\@ne}}
 \def\wtrf@check@counter#1{%
   \@ifundefined{c@#1}%
     {\wtrf@error{No counter '#1' defined}}%
