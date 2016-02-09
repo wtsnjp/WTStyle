@@ -12,11 +12,8 @@
 \def\wtrf@warn{\PackageWarningNoLine\wtrf@pkgname}
 \def\wtrf@error{\PackageError\wtrf@pkgname}
 
-%%%% new if
+%%%% new if and new counts
 \newif\if@wtrf@use@scope@
-\newif\if@wtrf@common@last@\@wtrf@common@last@false
-
-%%%% new counts
 \newcount\wtrf@tempcnta
 \newcount\wtrf@tempcntb
 
@@ -30,7 +27,6 @@
     {}}
 
 %%%% options
-\let\wtrf@scope\@empty
 \DeclareOption{chapter}{%
   \@wtrf@use@scope@true
   \wtrf@check@counter{chapter}%
@@ -50,7 +46,7 @@
     {\def\wtrf@thesubsection{\arabic{section}.\arabic{subsection}}}%
     {\def\wtrf@thesubsection{\arabic{chapter}.\arabic{section}.\arabic{subsection}}}%
   \def\wtrf@scope{\wtrf@thesubsection:}}
-\DeclareOption{global}{\@wtrf@use@scope@false}
+\DeclareOption{global}{\@wtrf@use@scope@false\let\wtrf@scope\@empty}
 \ExecuteOptions{global}
 \ProcessOptions\relax
 
@@ -92,22 +88,23 @@
     \endgroup}%
   % print refs
   \wtrf@name@def{wtrf@#1@print}##1{%
-    \wtrf@tempcnta\z@\@for\wtrf@member:=##1\do{\advance\wtrf@tempcnta\@ne}%
+    \wtrf@tempcnta\z@
+    \@for\wtrf@member:=##1\do{\advance\wtrf@tempcnta\@ne}%
     \ifnum\wtrf@tempcnta<\tw@
       \wtrf@name@use{wtrf@#1@prefix}%
       \wtrf@name@use{wtrf@#1@refcmd}{\wtrf@name@use{wtrf@#1@namespace}##1}%
       \wtrf@name@use{wtrf@#1@suffix}%
     \else
-      \wtrf@tempcntb\@ne\advance\wtrf@tempcnta\m@ne
-      \wtrf@name@use{wtrf@#1@prefix}
+      \wtrf@tempcntb\@ne
+      \advance\wtrf@tempcnta\m@ne
+      \wtrf@name@use{wtrf@#1@prefix}%
       \@for\wtrf@member:=##1\do{%
         \wtrf@name@use{wtrf@#1@refcmd}{\wtrf@name@use{wtrf@#1@namespace}\wtrf@member}%
         \ifnum\wtrf@tempcnta>\wtrf@tempcntb
           \wtrf@name@use{wtrf@#1@sep}%
-        \fi
-        \ifnum\wtrf@tempcnta=\wtrf@tempcntb
+        \else\ifnum\wtrf@tempcnta=\wtrf@tempcntb
           \wtrf@name@use{wtrf@#1@last@sep}%
-        \fi
+        \fi\fi
         \advance\wtrf@tempcntb\@ne}%
       \wtrf@name@use{wtrf@#1@suffix}%
     \fi}}
