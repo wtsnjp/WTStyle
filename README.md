@@ -1,6 +1,6 @@
 # WTStyle Package (v0.0)
 
-WTStyle package defines several document formats for Japanese document (but only 'simple' style is available at this point). Only pLaTeX + jsarticle is supported today. This package 
+WTStyle package defines several document formats for Japanese document (but only 'simple' style is available at this point). Only pLaTeX + jsarticle is supported today. This package is a part of the WT Series.
 
 ## System Requirements
 
