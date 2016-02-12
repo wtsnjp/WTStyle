@@ -13,8 +13,8 @@ All files in this package are under developing. Almost all documents for those h
 
 ## Documents
 
-Documents for this pacakge is in [doc directory](https://github.com/WatsonDNA/WTStyle/blob/master/doc) (Japanese).
+Documents for this pacakge is in [doc directory](./doc) (Japanese).
 
 ## License
 
-This package released under [the MIT license](https://github.com/WatsonDNA/WTStyle/blob/master/LICENSE).
+This package released under [the MIT license](./LICENSE).
