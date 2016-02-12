@@ -1,16 +1,20 @@
-# WTStyles Package
+# WTStyle Package (v0.0)
 
-This is LaTeX package which collect macros that the author often use to create LaTeX documents. It contains following style files:
+WTStyle package defines several document formats for Japanese document (but only 'simple' style is available at this point). Only pLaTeX + jsarticle is supported today. This package 
 
-* wtstyle.sty: define several document formats (pLaTeX only, at this point)
-* wtmath.sty: define macros for mathematics (amsmath package is required)
-* wtref.sty: extent LaTeX original \\label & \\ref command
-* wtkeyword.sty: help to make index
+## System Requirements
+
+* TeX format: pLaTeX2e
+* TeX engine: any engine
 
 ## Notice
 
 All files in this package are under developing. Almost all documents for those has not completed yet.
 
+## Documents
+
+Documents for this pacakge is in [doc directory](https://github.com/WatsonDNA/WTStyle/blob/master/doc) (Japanese).
+
 ## License
 
-This package released under [the MIT license](https://github.com/WatsonDNA/WTStyles/blob/master/LICENSE).
+This package released under [the MIT license](https://github.com/WatsonDNA/WTStyle/blob/master/LICENSE).
