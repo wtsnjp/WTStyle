@@ -123,11 +123,13 @@
   \newtheorem{wtst@theorem}{\theoremname}[chapter]
   \newtheorem{wtst@lemma}[wtst@theorem]{\lemmaname}
   \newcounter{wtst@example}[chapter]
+  \renewcommand{\thewtst@example}{\thechapter.\arabic{wtst@example}}
 \else
   \newtheorem{wtst@definition}{\definitionname}[section]
   \newtheorem{wtst@theorem}{\theoremname}[section]
   \newtheorem{wtst@lemma}[wtst@theorem]{\lemmaname}
   \newcounter{wtst@example}[section]
+  \renewcommand{\thewtst@example}{\thesection.\arabic{wtst@example}}
 \fi
 
 \newenvironment{definition}
@@ -151,10 +153,10 @@
 \newenvironment{example}
   {\par\normalfont\topsep6\p@\@plus6\p@\labelsep=1zw
     \refstepcounter{wtst@example}\trivlist
-    \item[\hskip\labelsep{\headfont\examplename\thechapter.\thewtst@example}]\ignorespaces}
+    \item[\hskip\labelsep{\headfont\examplename\thewtst@example}]\ignorespaces}
   {\endtrivlist}
 \newenvironment{proof}
-  {\par\normalfont\topsep6\p@\@plus6\p@\labelsep=1zw
+  {\normalfont\topsep6\p@\@plus6\p@\labelsep=1zw
     \trivlist\item[\hskip\labelsep{\headfont\proofname}]\ignorespaces}
   {\endtrivlist}
 
