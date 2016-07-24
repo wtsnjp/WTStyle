@@ -72,14 +72,11 @@
 
 % packages and settings
 \RequirePackage{tcolorbox}
-\tcbuselibrary{breakable}
-\newtcolorbox{wtst@mathbox}{%
-  sharp corners,%
-  colback=white,%
-  before={\par\pagebreak[0]\parindent=0pt\vspace{7pt}},%
-  after={},%
-  left=2mm,%
-  right=2mm}
+\tcbuselibrary{skins, breakable}
+\newtcolorbox{wtst@mathbox}{
+  enhanced jigsaw, breakable, sharp corners, colback=white,
+  before={\par\pagebreak[0]\parindent=0pt\vspace{7pt}}, after={},
+  left=2mm, right=2mm}
 
 % names
 \def\definitionname{定義}
