@@ -2,30 +2,44 @@
 % wtstyle.sty
 %
 
-%%%% package declaration
+% Package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{wtstyle}[2016/01/09 v0.0]
+\ProvidesPackage{wtstyle}[2017/01/14 dev]
 \def\wtst@pkgname{wtstyle}
+\RequirePackage{xkeyval}
 
-%%%% error messages
+% Messages
+\def\wtst@info{\PackageInfo\wtst@pkgname}
 \def\wtst@warn{\PackageWarningNoLine\wtst@pkgname}
 \def\wtst@error{\PackageError\wtst@pkgname}
 
-%%%% newifs
+% New counts and ifs
+\newcount\wtst@tempcnta
 \newif\if@wtst@chapter@exist@
-\newif\if@wtst@first@format@\@wtst@first@format@true
-\newif\if@wtst@simple@\@wtst@simple@false
 
-%%%% utilities
-\def\wtst@if@option@exist{\@ifnextchar[}
+% Utilities
+\def\wtst@ifundefined#1{\@ifundefined{wtst@#1}}
+\def\wtst@if@option@exists{\@ifnextchar[}
 \def\wtst@environment@with@option#1[#2]{\begin{wtst@#1}[#2]}
 \def\wtst@environment@without@option#1{\begin{wtst@#1}}
 
-%%%% symbol
-\def\wtst@bparen{(}
-\def\wtst@eparen{)}
+\def\wtst@inner@setkeys#1{\setkeys{inner}{key=#1}}
+\def\wtst@remove@spaces#1{%
+  \define@key{inner}{key}{\def#1{##1}}%
+  \expandafter\wtst@inner@setkeys\expandafter{#1}%
+  \disable@keys{inner}{key}}
 
-%%%% check chapter
+% Package options: set preset name
+\let\wtst@preset@name\relax
+\DeclareOption*{%
+  \ifx\wtst@preset@name\relax
+    \edef\wtst@preset@name{\CurrentOption}%
+  \else
+    \wtst@error{You can use only one preset}%
+  \fi}
+\ProcessOptions\relax
+
+% check chapter
 \@ifundefined{thechapter}{\@wtst@chapter@exist@false}{\@wtst@chapter@exist@true}
 \if@wtst@chapter@exist@
   \def\wtst@addtoreset#1{\@addtoreset{#1}{chapter}}
@@ -35,129 +49,70 @@
   \let\wtst@thepcounter\thesection
 \fi
 
-%%%% check option
-\def\wtst@check@first@format{%
-  \if@wtst@first@format@
-    \@wtst@first@format@false
-  \else
-    \wtst@error{You can not use multiple formats}%
-  \fi}
+% Metadata of document
+\define@key[wtst]{docinfo}{title}{\title{#1}}
+\define@key[wtst]{docinfo}{author}{\author{#1}}
+\define@key[wtst]{docinfo}{date}{\date{#1}}
 
-%%%% options
-\DeclareOption{simple}{\wtst@check@first@format\@wtst@simple@true}
-\ProcessOptions\relax
+% Load packages
+\define@key[wtst]{docstyle}{packages}{%
+  \@for\wtst@current@pkg:=#1\do{%
+    \wtst@remove@spaces\wtst@current@pkg
+    \expandafter\wtst@load@pkg\wtst@current@pkg\wtst@nil}}
+\def\wtst@load@pkg{%
+  \wtst@if@option@exists{\wtst@load@pkg@with@option}{\wtst@load@pkg@without@option}}
+\def\wtst@load@pkg@with@option[#1]#2\wtst@nil{\usepackage[#1]{#2}}
+\def\wtst@load@pkg@without@option#1\wtst@nil{\usepackage{#1}}
 
-%%%% styles
+% Counter styles
+\define@key[wtst]{docstyle}{default parent}{\def\wtst@dparent{#1}}
+\define@key[wtst]{docstyle}{footnote parent}{\def\wtst@fnparent{#1}}
+\define@key[wtst]{docstyle}{equation parent}{\def\wtst@eqparent{#1}}
+\define@key[wtst]{docstyle}{figure parent}{\def\wtst@figparent{#1}}
+\define@key[wtst]{docstyle}{table parent}{\def\wtst@tabparent{#1}}
 
-%% ===== common =====
+\define@key[wtst]{docstyle}{footnote mark}{\def\thefootnote{#1}}
 
-% footnote
-\renewcommand\thefootnote{\arabic{footnote}\wtst@eparen}
-\wtst@addtoreset{footnote}
+\AtBeginDocument{%
+  % Use default parent if specified
+  \wtst@ifundefined{fnparent}{\let\wtst@fnparent\wtst@dparent}{}%
+  \wtst@ifundefined{eqparent}{\let\wtst@eqparent\wtst@dparent}{}%
+  \wtst@ifundefined{figparent}{\let\wtst@figparent\wtst@dparent}{}%
+  \wtst@ifundefined{tabparent}{\let\wtst@tabparent\wtst@dparent}{}%
+  % Set parent counter
+  \wtst@ifundefined{fnparent}{}{%
+    \@addtoreset{footnote}{\wtst@fnparent}}%
+  \wtst@ifundefined{eqparent}{}{%
+    \def\theequation{\@nameuse{the\wtst@eqparent}.\arabic{equation}}%
+    \@addtoreset{equation}{\wtst@eqparent}}%
+  \wtst@ifundefined{figparent}{}{%
+    \def\thefigure{\@nameuse{the\wtst@figparent}.\arabic{figure}}%
+    \@addtoreset{figure}{\wtst@figparent}}%
+  \wtst@ifundefined{tabparent}{}{%
+    \def\thetable{\@nameuse{the\wtst@tabparent}.\arabic{table}}%
+    \@addtoreset{table}{\wtst@tabparent}}}
 
-% equation
-\renewcommand{\theequation}{\wtst@thepcounter.\arabic{equation}}
-\wtst@addtoreset{equation}
+% Font settings
+\define@key[wtst]{docstyle}{emph style}{\DeclareTextFontCommand{\emph}{#1}}
 
-% figure
-\renewcommand{\thefigure}{\wtst@thepcounter.\arabic{figure}}
-\wtst@addtoreset{figure}
+% Set keys
+\newcommand{\setdocinfo}[1]{\setkeys[wtst]{docinfo}{#1}}
+\@onlypreamble\setdocinfo
 
-% table
-\renewcommand{\thetable}{\wtst@thepcounter.\arabic{table}}
-\wtst@addtoreset{table}
+\newcommand{\setdocstyle}[1]{\setkeys[wtst]{docstyle}{#1}}
+\@onlypreamble\setdocstyle
 
-%% ===== simple =====
-\if@wtst@simple@
-
-% packages and settings
-\RequirePackage{tcolorbox}
-\tcbuselibrary{skins, breakable}
-\newtcolorbox{wtst@mathbox}{
-  enhanced jigsaw, breakable, sharp corners, colback=white,
-  before={\par\pagebreak[0]\parindent=0pt\vspace{7pt}}, after={},
-  left=2mm, right=2mm}
-
-% names
-\def\definitionname{定義}
-\def\theoremname{定理}
-\def\lemmaname{補題}
-\def\examplename{例}
-\def\proofname{証明}
-
-% heading
-\def\@makeschapterhead#1{%
-  \hbox{}\normalsize
-  \vskip\baselineskip
-  \hrule\@height.6\p@\@depth.6\p@\vskip2\p@\hrule\@height.3\p@\@depth.3\p@
-  \vskip.5\baselineskip
-  \begingroup\centering
-    \reset@font\LARGE\bfseries#1%
-  \par\endgroup
-  \ifdim\prevdepth>-\@m\p@\vskip-\prevdepth\fi
-  \vskip.5\baselineskip
-  \hrule\@height.3\p@\@depth.3\p@\vskip2\p@\hrule\@height.6\p@\@depth.6\p@
-  \vskip\baselineskip}
-\def\@makechapterhead#1{%
-  \hbox{}\normalsize
-  \vskip\baselineskip
-  \hrule\@height.6\p@\@depth.6\p@\vskip2\p@\hrule\@height.3\p@\@depth.3\p@
-  \vskip.5\baselineskip
-  \begingroup\centering\bfseries
-    \@chapapp
-    {\mdseries\sffamily\Large\thechapter}%
-    \@chappos\\
-    \LARGE#1%
-  \par\endgroup
-  \ifdim\prevdepth>-\@m\p@\vskip-\prevdepth\fi
-  \vskip.5\baselineskip
-  \hrule\@height.3\p@\@depth.3\p@\vskip2\p@\hrule\@height.6\p@\@depth.6\p@
-  \vskip\baselineskip}
-
-% theorem
-\if@wtst@chapter@exist@
-  \newtheorem{wtst@definition}{\definitionname}[chapter]
-  \newtheorem{wtst@theorem}{\theoremname}[chapter]
-  \newtheorem{wtst@lemma}[wtst@theorem]{\lemmaname}
-  \newcounter{wtst@example}[chapter]
-  \renewcommand{\thewtst@example}{\thechapter.\arabic{wtst@example}}
-\else
-  \newtheorem{wtst@definition}{\definitionname}[section]
-  \newtheorem{wtst@theorem}{\theoremname}[section]
-  \newtheorem{wtst@lemma}[wtst@theorem]{\lemmaname}
-  \newcounter{wtst@example}[section]
-  \renewcommand{\thewtst@example}{\thesection.\arabic{wtst@example}}
+% Load a preset
+\ifx\wtst@preset@name\relax\else
+  \IfFileExists{wtstyle-\wtst@preset@name.def}{
+    \wtst@info{Load preset `\wtst@preset@name'}
+    \wtst@tempcnta=\catcode`\@ \catcode`\@=11\relax
+    \input{wtstyle-\wtst@preset@name.def}
+    \catcode`\@=\wtst@tempcnta
+  }{
+    \wtst@error{Preset `\wtst@preset@name' does not exist}
+  }
 \fi
 
-\newenvironment{definition}
-  {\begin{wtst@mathbox}
-    \wtst@if@option@exist
-      {\wtst@environment@with@option{definition}}
-      {\wtst@environment@without@option{definition}}}
-  {\end{wtst@definition}\end{wtst@mathbox}}
-\newenvironment{theorem}
-  {\begin{wtst@mathbox}
-    \wtst@if@option@exist
-      {\wtst@environment@with@option{theorem}}
-      {\wtst@environment@without@option{theorem}}}
-  {\end{wtst@theorem}\end{wtst@mathbox}}
-\newenvironment{lemma}
-  {\begin{wtst@mathbox}
-    \wtst@if@option@exist
-      {\wtst@environment@with@option{lemma}}
-      {\wtst@environment@without@option{lemma}}}
-  {\end{wtst@lemma}\end{wtst@mathbox}}
-\newenvironment{example}
-  {\par\normalfont\topsep6\p@\@plus6\p@\labelsep=1zw
-    \refstepcounter{wtst@example}\trivlist
-    \item[\hskip\labelsep{\headfont\examplename\thewtst@example}]\ignorespaces}
-  {\endtrivlist}
-\newenvironment{proof}
-  {\normalfont\topsep6\p@\@plus6\p@\labelsep=1zw
-    \trivlist\item[\hskip\labelsep{\headfont\proofname}]\ignorespaces}
-  {\endtrivlist}
-
-\fi
-%% ===== end simple =====
-
-%% EOF
+% EOF
+\endinput
