@@ -1,6 +1,6 @@
-# WTStyle Package (v0.0)
+# WTStyle Package (dev)
 
-WTStyle package defines several document formats for Japanese document (but only 'simple' style is available at this point). Only pLaTeX + jsarticle is supported today. This package is a part of the WT Series.
+WTStyle package helps you to set document styles, and will make your preamble clean. It also includes several presets. Only jsclasses (on pLaTeX) are supported today. This package is a part of the WT Series.
 
 ## System Requirements
 
@@ -9,12 +9,16 @@ WTStyle package defines several document formats for Japanese document (but only
 
 ## Notice
 
-All files in this package are under developing. Almost all documents for those has not completed yet.
+All files in this package are under developing. Almost all documents for those has not been completed yet.
 
 ## Documents
 
-Documents for this pacakge is in [doc directory](./doc) (Japanese).
+Documents for this pacakge are in [doc directory](./doc).
 
 ## License
 
 This package released under [the MIT license](./LICENSE).
+
+---
+
+Takuto ASAKURA ([wtsnjp](https://twitter.com/wtsnjp))

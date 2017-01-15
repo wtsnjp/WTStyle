@@ -94,8 +94,8 @@
 
 % Set document styles
 \setdocstyle{
-  footnote mark = \arabic{footnote}\wtst@eparen,
-  emph style = \gtfamily\sffamily}
+  footnotemark = \arabic{footnote}\wtst@eparen,
+  emphstyle = \gtfamily\sffamily}
 
 % EOF
 \endinput
