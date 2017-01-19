@@ -1,6 +1,12 @@
-%
-% wtstyle.sty
-%
+%%
+%% This is file `wtstyle.sty'.
+%%
+%% Copyright (c) 2016-2017 Takuto ASAKURA (wtsnjp)
+%%   GitHub:   https://github.com/wtsnjp
+%%   Twitter:  @wtsnjp
+%%
+%% This package is distributed under the MIT License.
+%%
 
 % Package declaration
 \NeedsTeXFormat{pLaTeX2e}
@@ -13,41 +19,18 @@
 \def\wtst@warn{\PackageWarningNoLine\wtst@pkgname}
 \def\wtst@error{\PackageError\wtst@pkgname}
 
-% New counts and ifs
-\newcount\wtst@tempcnta
-\newif\if@wtst@chapter@exist@
-
 % Utilities
 \def\wtst@ifundefined#1{\@ifundefined{wtst@#1}}
 \def\wtst@if@option@exists{\@ifnextchar[}
 \def\wtst@environment@with@option#1[#2]{\begin{wtst@#1}[#2]}
 \def\wtst@environment@without@option#1{\begin{wtst@#1}}
 
-\def\wtst@inner@setkeys#1{\setkeys{inner}{key=#1}}
-\def\wtst@remove@spaces#1{%
-  \define@key{inner}{key}{\def#1{##1}}%
+% Trimming spaces
+\def\wtst@inner@setkeys#1{\setkeys[wtst]{inner}{key=#1}}
+\def\wtst@trimming@spaces#1{%
+  \define@key[wtst]{inner}{key}{\def#1{##1}}%
   \expandafter\wtst@inner@setkeys\expandafter{#1}%
-  \disable@keys{inner}{key}}
-
-% Package options: set preset name
-\let\wtst@preset@name\relax
-\DeclareOption*{%
-  \ifx\wtst@preset@name\relax
-    \edef\wtst@preset@name{\CurrentOption}%
-  \else
-    \wtst@error{You can use only one preset}%
-  \fi}
-\ProcessOptions\relax
-
-% check chapter
-\@ifundefined{thechapter}{\@wtst@chapter@exist@false}{\@wtst@chapter@exist@true}
-\if@wtst@chapter@exist@
-  \def\wtst@addtoreset#1{\@addtoreset{#1}{chapter}}
-  \let\wtst@thepcounter\thechapter
-\else
-  \def\wtst@addtoreset#1{\@addtoreset{#1}{section}}
-  \let\wtst@thepcounter\thesection
-\fi
+  \disable@keys[wtst]{inner}{key}}
 
 % Metadata of document
 \define@key[wtst]{docinfo}{title}{\title{#1}}
@@ -57,7 +40,7 @@
 % Load packages
 \define@key[wtst]{docstyle}{packages}{%
   \@for\wtst@current@pkg:=#1\do{%
-    \wtst@remove@spaces\wtst@current@pkg
+    \wtst@trimming@spaces\wtst@current@pkg
     \expandafter\wtst@load@pkg\wtst@current@pkg\wtst@nil}}
 \def\wtst@load@pkg{%
   \wtst@if@option@exists{\wtst@load@pkg@with@option}{\wtst@load@pkg@without@option}}
@@ -102,17 +85,7 @@
 \newcommand{\setdocstyle}[1]{\setkeys[wtst]{docstyle}{#1}}
 \@onlypreamble\setdocstyle
 
-% Load a preset
-\ifx\wtst@preset@name\relax\else
-  \IfFileExists{wtstyle-\wtst@preset@name.def}{
-    \wtst@info{Load preset `\wtst@preset@name'}
-    \wtst@tempcnta=\catcode`\@ \catcode`\@=11\relax
-    \input{wtstyle-\wtst@preset@name.def}
-    \catcode`\@=\wtst@tempcnta
-  }{
-    \wtst@error{Preset `\wtst@preset@name' does not exist}
-  }
-\fi
-
-% EOF
+% All done
 \endinput
+
+%% EOF
