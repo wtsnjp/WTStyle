@@ -48,13 +48,14 @@
 \def\wtst@load@pkg@without@option#1\wtst@nil{\usepackage{#1}}
 
 % Counter styles
-\define@key[wtst]{docstyle}{defaultparent}{\def\wtst@dparent{#1}}
-\define@key[wtst]{docstyle}{footnoteparent}{\def\wtst@fnparent{#1}}
-\define@key[wtst]{docstyle}{equationparent}{\def\wtst@eqparent{#1}}
-\define@key[wtst]{docstyle}{figureparent}{\def\wtst@figparent{#1}}
-\define@key[wtst]{docstyle}{tableparent}{\def\wtst@tabparent{#1}}
+\define@key[wtst]{docstyle}{default parent}{\def\wtst@dparent{#1}}
+\define@key[wtst]{docstyle}{footnote parent}{\def\wtst@fnparent{#1}}
+\define@key[wtst]{docstyle}{equation parent}{\def\wtst@eqparent{#1}}
+\define@key[wtst]{docstyle}{figure parent}{\def\wtst@figparent{#1}}
+\define@key[wtst]{docstyle}{table parent}{\def\wtst@tabparent{#1}}
 
 \define@key[wtst]{docstyle}{footnotemark}{\def\thefootnote{#1}}
+\define@key[wtst]{docstyle}{url style}{\def\UrlFont{#1}}
 
 \AtBeginDocument{%
   % Use default parent if specified
@@ -76,7 +77,7 @@
     \@addtoreset{table}{\wtst@tabparent}}}
 
 % Font settings
-\define@key[wtst]{docstyle}{emphstyle}{\DeclareTextFontCommand{\emph}{#1}}
+\define@key[wtst]{docstyle}{emph style}{\DeclareTextFontCommand{\emph}{#1}}
 
 % Set keys
 \newcommand{\setdocinfo}[1]{\setkeys[wtst]{docinfo}{#1}}
