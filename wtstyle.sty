@@ -48,36 +48,54 @@
 \def\wtst@load@pkg@without@option#1\wtst@nil{\usepackage{#1}}
 
 % Counter styles
-\define@key[wtst]{docstyle}{default parent}{\def\wtst@dparent{#1}}
-\define@key[wtst]{docstyle}{footnote parent}{\def\wtst@fnparent{#1}}
-\define@key[wtst]{docstyle}{equation parent}{\def\wtst@eqparent{#1}}
-\define@key[wtst]{docstyle}{figure parent}{\def\wtst@figparent{#1}}
-\define@key[wtst]{docstyle}{table parent}{\def\wtst@tabparent{#1}}
-
 \define@key[wtst]{docstyle}{footnotemark}{\def\thefootnote{#1}}
-\define@key[wtst]{docstyle}{url style}{\def\UrlFont{#1}}
+\define@key[wtst]{docstyle}{parent counter}{\wtst@set@parent@counter{#1}}
 
-\AtBeginDocument{%
-  % Use default parent if specified
-  \wtst@ifundefined{fnparent}{\let\wtst@fnparent\wtst@dparent}{}%
-  \wtst@ifundefined{eqparent}{\let\wtst@eqparent\wtst@dparent}{}%
-  \wtst@ifundefined{figparent}{\let\wtst@figparent\wtst@dparent}{}%
-  \wtst@ifundefined{tabparent}{\let\wtst@tabparent\wtst@dparent}{}%
-  % Set parent counter
-  \wtst@ifundefined{fnparent}{}{%
-    \@addtoreset{footnote}{\wtst@fnparent}}%
-  \wtst@ifundefined{eqparent}{}{%
-    \def\theequation{\@nameuse{the\wtst@eqparent}.\arabic{equation}}%
-    \@addtoreset{equation}{\wtst@eqparent}}%
-  \wtst@ifundefined{figparent}{}{%
-    \def\thefigure{\@nameuse{the\wtst@figparent}.\arabic{figure}}%
-    \@addtoreset{figure}{\wtst@figparent}}%
-  \wtst@ifundefined{tabparent}{}{%
-    \def\thetable{\@nameuse{the\wtst@tabparent}.\arabic{table}}%
-    \@addtoreset{table}{\wtst@tabparent}}}
+\def\wtst@set@parent@counter{%
+  \let\wtst@tmp@list\relax
+  \wtst@if@option@exists
+    {\wtst@set@parent@counter@with@option}
+    {\wtst@@set@parent@counter}}
+\def\wtst@set@parent@count@with@option[#1]{%
+  \edef\wtst@tmp@list{#1}\wtst@@set@parent@counter}
+\def\wtst@@set@parent@counter#1{%
+  \ifx\wtst@tmp@list\relax
+    \def\wtst@tmp@list{equation, figure, table}%
+  \fi
+  \@for\wtst@current@cnt:=\wtst@tmp@list\do{%
+    \wtst@trimming@spaces\wtst@current@cnt
+    \@namedef{the\wtst@current@cnt}
+      {\@nameuse{the#1}.\arabic{\wtst@current@cnt}}%
+    \@addtoreset{\wtst@current@cnt}{#1}}}
+
+%\define@key[wtst]{docstyle}{default parent}{\def\wtst@dparent{#1}}
+%\define@key[wtst]{docstyle}{footnote parent}{\def\wtst@fnparent{#1}}
+%\define@key[wtst]{docstyle}{equation parent}{\def\wtst@eqparent{#1}}
+%\define@key[wtst]{docstyle}{figure parent}{\def\wtst@figparent{#1}}
+%\define@key[wtst]{docstyle}{table parent}{\def\wtst@tabparent{#1}}
+%
+%\AtBeginDocument{%
+%  % Use default parent if specified
+%  \wtst@ifundefined{fnparent}{\let\wtst@fnparent\wtst@dparent}{}%
+%  \wtst@ifundefined{eqparent}{\let\wtst@eqparent\wtst@dparent}{}%
+%  \wtst@ifundefined{figparent}{\let\wtst@figparent\wtst@dparent}{}%
+%  \wtst@ifundefined{tabparent}{\let\wtst@tabparent\wtst@dparent}{}%
+%  % Set parent counter
+%  \wtst@ifundefined{fnparent}{}{%
+%    \@addtoreset{footnote}{\wtst@fnparent}}%
+%  \wtst@ifundefined{eqparent}{}{%
+%    \def\theequation{\@nameuse{the\wtst@eqparent}.\arabic{equation}}%
+%    \@addtoreset{equation}{\wtst@eqparent}}%
+%  \wtst@ifundefined{figparent}{}{%
+%    \def\thefigure{\@nameuse{the\wtst@figparent}.\arabic{figure}}%
+%    \@addtoreset{figure}{\wtst@figparent}}%
+%  \wtst@ifundefined{tabparent}{}{%
+%    \def\thetable{\@nameuse{the\wtst@tabparent}.\arabic{table}}%
+%    \@addtoreset{table}{\wtst@tabparent}}}
 
 % Font settings
 \define@key[wtst]{docstyle}{emph style}{\DeclareTextFontCommand{\emph}{#1}}
+\define@key[wtst]{docstyle}{url style}{\def\UrlFont{#1}}
 
 % Set keys
 \newcommand{\setdocinfo}[1]{\setkeys[wtst]{docinfo}{#1}}
