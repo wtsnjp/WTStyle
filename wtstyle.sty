@@ -9,8 +9,8 @@
 %%
 
 % Package declaration
-\NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{wtstyle}[2017/01/14 dev]
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{wtstyle}[2017/08/02 dev]
 \def\wtst@pkgname{wtstyle}
 \RequirePackage{xkeyval}
 
@@ -34,6 +34,7 @@
 
 % Metadata of document
 \define@key[wtst]{docinfo}{title}{\title{#1}}
+\define@key[wtst]{docinfo}{subtitle}{\subtitle{#1}}
 \define@key[wtst]{docinfo}{author}{\author{#1}}
 \define@key[wtst]{docinfo}{date}{\date{#1}}
 
