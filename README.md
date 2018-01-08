@@ -13,7 +13,7 @@ All files in this package are under developing. Almost all documents for those h
 
 ## Documents
 
-Documents for this pacakge are in [doc directory](./doc).
+Documents for this package is not ready for now, sorry.
 
 ## License
 
