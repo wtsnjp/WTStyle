@@ -1,11 +1,11 @@
-# WTStyle Package (dev)
+# The WTStyle Package (dev)
 
-WTStyle package helps you to set document styles, and will make your preamble clean. It also includes several presets. Only jsclasses (on pLaTeX) are supported today. This package is a part of the WT Series.
+Package WTStyle helps you to set document styles, and will make your preamble clean. This package is a part of the WT Series.
 
 ## System Requirements
 
-* TeX format: pLaTeX2e
-* TeX engine: any engine
+* TeX format: LaTeX2e
+* expl3 environment
 
 ## Notice
 
