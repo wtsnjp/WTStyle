@@ -1,86 +1,151 @@
 %%
 %% This is file `wtstyle.sty'.
 %%
-%% Copyright (c) 2016-2017 Takuto ASAKURA (wtsnjp)
+%% Copyright (c) 2016-2018 Takuto ASAKURA (wtsnjp)
 %%   GitHub:   https://github.com/wtsnjp
 %%   Twitter:  @wtsnjp
 %%
 %% This package is distributed under the MIT License.
 %%
 
-% Package declaration
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{wtstyle}[2017/08/02 dev]
-\def\wtst@pkgname{wtstyle}
-\RequirePackage{xkeyval}
+% -------------------------------------------------- declarations
 
-% Messages
-\def\wtst@info{\PackageInfo\wtst@pkgname}
-\def\wtst@warn{\PackageWarningNoLine\wtst@pkgname}
-\def\wtst@error{\PackageError\wtst@pkgname}
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+\ProvidesExplPackage {wtstyle} {2018/01/08} {0.1.0}
+  {Make your preamble clean}
 
-% Utilities
-\def\wtst@ifundefined#1{\@ifundefined{wtst@#1}}
-\def\wtst@if@option@exists{\@ifnextchar[}
-\def\wtst@environment@with@option#1[#2]{\begin{wtst@#1}[#2]}
-\def\wtst@environment@without@option#1{\begin{wtst@#1}}
+% -------------------------------------------------- messages
 
-% Trimming spaces
-\def\wtst@inner@setkeys#1{\setkeys[wtst]{inner}{key=#1}}
-\def\wtst@trimming@spaces#1{%
-  \define@key[wtst]{inner}{key}{\def#1{##1}}%
-  \expandafter\wtst@inner@setkeys\expandafter{#1}%
-  \disable@keys[wtst]{inner}{key}}
+\msg_new:nnn { wtstyle } { set-docinfo }
+  { Setting~metadata~'#1'~to~'#2'. }
+\msg_new:nnn { wtstyle } { unknown-docinfo }
+  { Metadata~'#1'~is~unknown;~will~be~ignored. }
+\msg_new:nnn { wtstyle } { load-package }
+  { Loading~package~'#1'~without~any~option. }
+\msg_new:nnn { wtstyle } { load-package-with-options }
+  { Loading~package~'#1'~with~options~#2. }
+\msg_new:nnn { wtstyle } { file-non-exist }
+  { File~'#1'~does~not~exist;~skipping. }
 
-% Metadata of document
-\define@key[wtst]{docinfo}{title}{\title{#1}}
-\define@key[wtst]{docinfo}{subtitle}{\subtitle{#1}}
-\define@key[wtst]{docinfo}{author}{\author{#1}}
-\define@key[wtst]{docinfo}{date}{\date{#1}}
+% -------------------------------------------------- utilities
 
-% Load packages
-\define@key[wtst]{docstyle}{packages}{%
-  \@for\wtst@current@pkg:=#1\do{%
-    \wtst@trimming@spaces\wtst@current@pkg
-    \expandafter\wtst@load@pkg\wtst@current@pkg\wtst@nil}}
-\def\wtst@load@pkg{%
-  \wtst@if@option@exists{\wtst@load@pkg@with@option}{\wtst@load@pkg@without@option}}
-\def\wtst@load@pkg@with@option[#1]#2\wtst@nil{\usepackage[#1]{#2}}
-\def\wtst@load@pkg@without@option#1\wtst@nil{\usepackage{#1}}
+\cs_new:Npn \wtst_unsafe_name:n #1 { #1 }
+\cs_new_eq:NN \wtst_unsafe_command:c \use:c
 
-% Counter styles
-\define@key[wtst]{docstyle}{footnote mark}{\def\thefootnote{#1}}
-\define@key[wtst]{docstyle}{footnote parent}{\@addtoreset{footnote}{#1}}
-\define@key[wtst]{docstyle}{parent counter}{\wtst@set@parent@counter{#1}}
+\cs_generate_variant:Nn \regex_count:NnN { NoN }
+\cs_generate_variant:Nn \regex_extract_once:NnNT { NoN }
 
-\def\wtst@set@parent@counter{%
-  \let\wtst@tmp@list\relax
-  \wtst@if@option@exists
-    {\wtst@set@parent@counter@with@option}
-    {\wtst@@set@parent@counter}}
-\def\wtst@set@parent@count@with@option[#1]{%
-  \edef\wtst@tmp@list{#1}\wtst@@set@parent@counter}
-\def\wtst@@set@parent@counter#1{%
-  \@ifundefined{wtst@tmp@list}{\def\wtst@tmp@list{equation, figure, table}}{}%
-  \@for\wtst@current@cnt:=\wtst@tmp@list\do{%
-    \wtst@trimming@spaces\wtst@current@cnt
-    \expandafter\wtst@@@set@parent@counter\expandafter{\wtst@current@cnt}{#1}}}
-\def\wtst@@@set@parent@counter#1#2{%
-  \@namedef{the#1}{\@nameuse{the#2}.\arabic{#1}}%
-  \@addtoreset{#1}{#2}}
+% -------------------------------------------------- variables
 
-% Font settings
-\define@key[wtst]{docstyle}{emph style}{\DeclareTextFontCommand{\emph}{#1}}
-\define@key[wtst]{docstyle}{url style}{\def\UrlFont{#1}}
+\tl_new:N \l_wtst_pkgname_tl
+\tl_new:N \l_wtst_pkgopts_tl
 
-% Set keys
-\newcommand{\setdocinfo}[1]{\setkeys[wtst]{docinfo}{#1}}
-\@onlypreamble\setdocinfo
+\prop_new:N \l_wtst_pkglist_prop
 
-\newcommand{\setdocstyle}[1]{\setkeys[wtst]{docstyle}{#1}}
-\@onlypreamble\setdocstyle
+\regex_const:Nn \c_wtst_package_regex { \A,(\[.*\]|)\s*(.*)\Z }
+\regex_const:Nn \c_wtst_begin_bracket_regex { \[ }
+\regex_const:Nn \c_wtst_end_bracket_regex { \] }
 
-% All done
-\endinput
+% -------------------------------------------------- user interface
 
+\NewDocumentCommand \setdocinfo { m }
+  {
+    \keys_set:nn { wtst-docinfo } { #1 }
+  }
+
+\NewDocumentCommand \setdocstyle { m }
+  {
+    \keys_set:nn { wtst-docstyle } { #1 }
+  }
+
+% -------------------------------------------------- docinfo keys & commands
+
+\keys_define:nn { wtst-docinfo }
+  {
+    unknown .code:n = \wtst_set_docinfo:nn { \l_keys_key_tl } { #1 },
+  }
+
+\cs_new:Npn \wtst_set_docinfo:nn #1#2
+  {
+    \cs_if_exist:cTF { #1 }
+      {
+        \use:c { #1 } { #2 }
+        \msg_info:nnxx { wtstyle } { set-docinfo } { #1 } { #2 }
+      }
+      {
+        \msg_warning:nnx { wtstyle } { unknown-docinfo } { #1 }
+      }
+  }
+
+% -------------------------------------------------- docstyle keys
+
+\keys_define:nn { wtst-docstyle }
+  {
+    packages .code:n = { \wtst_load_packages:n { #1 } },
+    setting-files .code:n = { \wtst_load_settings:n { #1 } },
+    emph-style .code:n = { \use:c { DeclareTextFontCommand } { \emph } { #1 } }
+  }
+
+\cs_new:Npn \wtst_load_packages:n #1
+  {
+    \tl_clear:N \l_tmpa_tl
+    \clist_map_inline:nn { #1 }
+      {
+        \tl_put_right:Nn \l_tmpa_tl { ,##1 }
+        \regex_count:NoN \c_wtst_begin_bracket_regex { \l_tmpa_tl } \l_tmpa_int
+        \regex_count:NoN \c_wtst_end_bracket_regex { \l_tmpa_tl } \l_tmpb_int
+        \int_compare:nNnT { \l_tmpa_int } = { \l_tmpb_int }
+          {
+            \regex_extract_once:NoNT \c_wtst_package_regex { \l_tmpa_tl } \l_tmpa_seq
+              {
+                \seq_pop_right:NN \l_tmpa_seq \l_wtst_pkgname_tl
+                \seq_pop_right:NN \l_tmpa_seq \l_wtst_pkgopts_tl
+                \prop_if_in:NoT \l_wtst_pkglist_prop { \l_wtst_pkgname_tl }
+                  {
+                    \prop_get:NoN \l_wtst_pkglist_prop
+                      { \l_wtst_pkgname_tl } \l_wtst_pkgname_tl
+                  }
+                \tl_if_empty:NTF \l_wtst_pkgopts_tl
+                  {
+                    \msg_info:nnx { wtstyle } { load-package } { \l_wtst_pkgname_tl }
+                    \usepackage { \l_wtst_pkgname_tl }
+                  }
+                  {
+                    \msg_info:nnxx { wtstyle } { load-package-with-options }
+                      { \l_wtst_pkgname_tl } { \l_wtst_pkgopts_tl }
+                    \exp_after:wN \usepackage \l_wtst_pkgopts_tl { \l_wtst_pkgname_tl }
+                  }
+              }
+            \tl_clear:N \l_tmpa_tl
+          }
+      }
+  }
+
+\cs_new:Npn \wtst_load_settings:n #1
+  {
+    \clist_map_inline:nn { #1 }
+      {
+        \file_if_exist:nTF { ##1 }
+          {
+            \file_input:n { ##1 }
+          }
+          {
+            \msg_warning:nnn { wtstyle } { non-exist-file } { ##1 }
+          }
+      }
+  }
+
+% -------------------------------------------------- engine-specific things
+
+\sys_if_engine_luatex:T
+  {
+    \prop_set_from_keyval:Nn \l_wtst_pkglist_prop
+      {
+        otf = luatexja-otf,
+        okumacro = bxokumacro,
+      }
+  }
+
+% vim: ft=expl3 nospell:
 %% EOF
