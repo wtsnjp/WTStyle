@@ -17,14 +17,22 @@
 
 % -------------------------------------------------- messages
 
+\msg_new:nnn { wtstyle } { no-hyperref }
+  {
+    The~hyperref~package~is~required~to~set~PDF~metadata.\\
+    I~will~load~hyperref~automatically.
+  }
+
 \msg_new:nnn { wtstyle } { set-docinfo }
   { Setting~metadata~'#1'~to~'#2'. }
 \msg_new:nnn { wtstyle } { unknown-docinfo }
-  { Metadata~'#1'~is~unknown;~will~be~ignored. }
+  { Metadata~'#1'~is~unknown;~this~will~be~ignored. }
+
 \msg_new:nnn { wtstyle } { load-package }
   { Loading~package~'#1'~without~any~option. }
 \msg_new:nnn { wtstyle } { load-package-with-options }
   { Loading~package~'#1'~with~options~#2. }
+
 \msg_new:nnn { wtstyle } { file-non-exist }
   { File~'#1'~does~not~exist;~skipping. }
 
@@ -38,6 +46,13 @@
 
 % -------------------------------------------------- variables
 
+% doc info (metadata)
+\bool_new:N \g_wtst_set_metadata_bool
+
+\tl_new:N \g_wtst_doc_title_tl
+\tl_new:N \g_wtst_doc_author_tl
+
+% package handling
 \tl_new:N \l_wtst_pkgname_tl
 \tl_new:N \l_wtst_pkgopts_tl
 
@@ -63,18 +78,35 @@
 
 \keys_define:nn { wtst-docinfo }
   {
-    unknown .code:n = \wtst_set_docinfo:nn { \l_keys_key_tl } { #1 },
+    set-metadata .bool_set:N = \g_wtst_set_metadata_bool,
+    unknown .code:n = \exp_args:No \wtst_set_docinfo:nn { \l_keys_key_tl } { #1 },
   }
 
 \cs_new:Npn \wtst_set_docinfo:nn #1#2
   {
-    \cs_if_exist:cTF { #1 }
+    \str_case:nnF { #1 }
       {
-        \use:c { #1 } { #2 }
-        \msg_info:nnxx { wtstyle } { set-docinfo } { #1 } { #2 }
+        { title }
+        {
+          \tl_gset:Nn \g_wtst_doc_title_tl { #2 }
+          \use:c { title } { \emph { #2 } }
+        }
+
+        { author }
+        {
+          \tl_gset:Nn \g_wtst_doc_author_tl { #2 }
+          \use:c { author } { #2 }
+        }
       }
       {
-        \msg_warning:nnx { wtstyle } { unknown-docinfo } { #1 }
+        \cs_if_exist:cTF { #1 }
+          {
+            \use:c { #1 } { #2 }
+            %\msg_info:nnxx { wtstyle } { set-docinfo } { #1 } { #2 }
+          }
+          {
+            \msg_warning:nnx { wtstyle } { unknown-docinfo } { #1 }
+          }
       }
   }
 
@@ -84,7 +116,8 @@
   {
     packages .code:n = { \wtst_load_packages:n { #1 } },
     setting-files .code:n = { \wtst_load_settings:n { #1 } },
-    emph-style .code:n = { \use:c { DeclareTextFontCommand } { \emph } { #1 } }
+    emph-style .code:n = { \use:c { DeclareTextFontCommand } { \emph } { #1 } },
+    page-style .code:n = { \use:c { pagestyle } { #1 } },
   }
 
 \cs_new:Npn \wtst_load_packages:n #1
@@ -144,6 +177,27 @@
       {
         otf = luatexja-otf,
         okumacro = bxokumacro,
+      }
+  }
+
+% -------------------------------------------------- hooks
+
+\AtBeginDocument { \wtst_docinfo_hook: }
+
+\cs_new:Nn \wtst_docinfo_hook:
+  {
+    \bool_if:NT \g_wtst_set_metadata_bool
+      {
+        \cs_if_free:NT \hypersetup
+          {
+            \msg_warning:nn { wtstyle } { no-hyperref }
+            \RequirePackage { hyperref }
+          }
+        \hypersetup
+          {
+            pdftitle = { \g_wtst_doc_title_tl },
+            pdfauthor = { \g_wtst_doc_author_tl },
+          }
       }
   }
 
