@@ -33,13 +33,10 @@
 \msg_new:nnn { wtstyle } { load-package-with-options }
   { Loading~package~'#1'~with~options~#2. }
 
-\msg_new:nnn { wtstyle } { file-non-exist }
+\msg_new:nnn { wtstyle } { file-not-exist }
   { File~'#1'~does~not~exist;~skipping. }
 
 % -------------------------------------------------- utilities
-
-\cs_new:Npn \wtst_unsafe_name:n #1 { #1 }
-\cs_new_eq:NN \wtst_unsafe_command:c \use:c
 
 \cs_generate_variant:Nn \regex_count:NnN { NoN }
 \cs_generate_variant:Nn \regex_extract_once:NnNT { NoN }
@@ -89,13 +86,13 @@
         { title }
         {
           \tl_gset:Nn \g_wtst_doc_title_tl { #2 }
-          \use:c { title } { \emph { #2 } }
+          \title { #2 }
         }
 
         { author }
         {
           \tl_gset:Nn \g_wtst_doc_author_tl { #2 }
-          \use:c { author } { #2 }
+          \author { #2 }
         }
       }
       {
@@ -116,8 +113,8 @@
   {
     packages .code:n = { \wtst_load_packages:n { #1 } },
     setting-files .code:n = { \wtst_load_settings:n { #1 } },
-    emph-style .code:n = { \use:c { DeclareTextFontCommand } { \emph } { #1 } },
-    page-style .code:n = { \use:c { pagestyle } { #1 } },
+    emph-style .code:n = { \DeclareTextFontCommand { \emph } { #1 } },
+    page-style .code:n = { \pagestyle { #1 } },
   }
 
 \cs_new:Npn \wtst_load_packages:n #1
@@ -164,7 +161,7 @@
             \file_input:n { ##1 }
           }
           {
-            \msg_warning:nnn { wtstyle } { non-exist-file } { ##1 }
+            \msg_warning:nnn { wtstyle } { file-not-exist } { ##1 }
           }
       }
   }
