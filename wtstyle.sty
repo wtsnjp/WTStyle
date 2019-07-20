@@ -190,11 +190,14 @@
             \msg_warning:nn { wtstyle } { no-hyperref }
             \RequirePackage { hyperref }
           }
-        \hypersetup
-          {
-            pdftitle = { \g_wtst_doc_title_tl },
-            pdfauthor = { \g_wtst_doc_author_tl },
-          }
+        \group_begin:
+          \cs_set:Npn \thanks ##1 {}
+          \hypersetup
+            {
+              pdftitle = { \g_wtst_doc_title_tl },
+              pdfauthor = { \g_wtst_doc_author_tl },
+            }
+        \group_end:
       }
   }
 
