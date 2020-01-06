@@ -49,6 +49,9 @@
 \tl_new:N \g_wtst_doc_title_tl
 \tl_new:N \g_wtst_doc_author_tl
 
+% doc style
+\tl_new:N \g_wtst_style_title_tl
+
 % package handling
 \tl_new:N \l_wtst_pkgname_tl
 \tl_new:N \l_wtst_pkgopts_tl
@@ -86,7 +89,7 @@
         { title }
         {
           \tl_gset:Nn \g_wtst_doc_title_tl { #2 }
-          \title { #2 }
+          \title { { \tl_use:N \g_wtst_style_title_tl #2 } }
         }
 
         { author }
@@ -115,6 +118,7 @@
     setting-files .code:n = { \wtst_load_settings:n { #1 } },
     emph-style .code:n = { \DeclareTextFontCommand { \emph } { #1 } },
     page-style .code:n = { \pagestyle { #1 } },
+    title-style .code:n = { \tl_gset:Nn \g_wtst_style_title_tl { #1 } },
   }
 
 \cs_new:Npn \wtst_load_packages:n #1
